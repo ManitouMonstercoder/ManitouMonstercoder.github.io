@@ -1,13 +1,23 @@
-name: Deploy Salvebot
+name: Deploy Salvebot to GitHub Pages
 
 on:
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
+  workflow_dispatch:
+
+# Required permissions for GitHub Pages deployment
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow only one concurrent deployment
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
 
 jobs:
-  deploy-frontend:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -18,12 +28,17 @@ jobs:
         with:
           node-version: '18'
 
-      - name: Install frontend dependencies
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Install dependencies
         run: |
           cd salvebot-frontend
           npm install
+        env:
+          NODE_ENV: production
 
-      - name: Build frontend
+      - name: Build with Next.js
         run: |
           cd salvebot-frontend
           npm run build
@@ -31,28 +46,18 @@ jobs:
           NEXT_PUBLIC_API_URL: https://salvebot-api.fideleamazing.workers.dev
           NEXT_PUBLIC_SITE_URL: https://salvebot.com
 
-      - name: Setup Pages
-        uses: actions/configure-pages@v4
-
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: salvebot-frontend/out
 
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-        if: github.ref == 'refs/heads/main'
-
-# Backend is deployed manually via wrangler CLI
-# No automatic backend deployment needed
-
-# Enable GitHub Pages
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: "pages"
-  cancel-in-progress: true
