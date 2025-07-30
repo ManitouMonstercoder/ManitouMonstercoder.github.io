@@ -20,7 +20,11 @@
       "Bash(git filter-branch:*)",
       "Bash(git init:*)",
       "Bash(git remote add:*)",
-      "Bash(git branch:*)"
+      "Bash(git branch:*)",
+      "Bash(nslookup:*)",
+      "Bash(echo:*)",
+      "Bash(ls:*)",
+      "Bash(git pull:*)"
     ],
     "deny": []
   }
