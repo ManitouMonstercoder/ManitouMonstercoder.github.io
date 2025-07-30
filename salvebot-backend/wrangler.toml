@@ -55,7 +55,7 @@ database_id = "778c990b-7a3a-4957-8191-26db026bf788"
 # Environment variables
 [vars]
 ENVIRONMENT = "production"
-CORS_ORIGIN = "https://ManitouMonstercoder.github.io"
+CORS_ORIGIN = "https://salvebot.com"
 STRIPE_PUBLISHABLE_KEY = "pk_live_51QQC0REdA0CneIGNCLsIlrAZmd5iATefQPI13fFPHCxXSAsvCKNdl5dQyRvFyMqWYgG28Fd0Knob7dEQFXpJMVvp00120hgF8o"
 
 # Secrets (use: wrangler secret put SECRET_NAME)
