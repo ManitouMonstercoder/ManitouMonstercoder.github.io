@@ -24,7 +24,11 @@
       "Bash(nslookup:*)",
       "Bash(echo:*)",
       "Bash(ls:*)",
-      "Bash(git pull:*)"
+      "Bash(git pull:*)",
+      "Bash(npx gh-pages:*)",
+      "Bash(cp:*)",
+      "Bash(mv:*)",
+      "Bash(git stash:*)"
     ],
     "deny": []
   }

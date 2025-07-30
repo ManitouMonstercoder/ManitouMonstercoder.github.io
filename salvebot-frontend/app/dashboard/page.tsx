@@ -1,10 +1,49 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Bot, Plus, Settings, FileText, Globe, BarChart3 } from 'lucide-react'
-import Link from 'next/link'
+import { AuthGuard } from '@/components/auth/AuthGuard'
+import { api, authUtils } from '@/lib/api'
 
 export default function DashboardPage() {
+  const router = useRouter()
+  const [user, setUser] = useState<any>(null)
+  const [chatbots, setChatbots] = useState<any[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    loadUserData()
+  }, [])
+
+  const loadUserData = async () => {
+    try {
+      const [userResponse, chatbotsResponse] = await Promise.all([
+        api.me(),
+        api.getChatbots().catch(() => ({ chatbots: [] }))
+      ])
+
+      if (userResponse.success) {
+        setUser(userResponse.user)
+      }
+      
+      setChatbots(chatbotsResponse.chatbots || [])
+    } catch (error) {
+      console.error('Failed to load user data:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleSignOut = () => {
+    authUtils.removeToken()
+    router.push('/')
+  }
+
   return (
-    <div className="min-h-screen bg-background">
+    <AuthGuard>
+      <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="border-b">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
@@ -17,7 +56,7 @@ export default function DashboardPage() {
               <Settings className="h-4 w-4" />
               Settings
             </Button>
-            <Button variant="ghost" size="sm">
+            <Button variant="ghost" size="sm" onClick={handleSignOut}>
               Sign Out
             </Button>
           </div>
@@ -27,7 +66,9 @@ export default function DashboardPage() {
       <div className="container mx-auto px-4 py-8">
         {/* Welcome Section */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Welcome back!</h1>
+          <h1 className="text-3xl font-bold mb-2">
+            Welcome back{user?.name ? `, ${user.name}` : ''}!
+          </h1>
           <p className="text-muted-foreground">
             Manage your chatbots and monitor their performance.
           </p>
@@ -39,7 +80,7 @@ export default function DashboardPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Active Bots</p>
-                <p className="text-2xl font-bold">2</p>
+                <p className="text-2xl font-bold">{chatbots.length}</p>
               </div>
               <Bot className="h-8 w-8 text-muted-foreground" />
             </div>
@@ -197,5 +238,6 @@ export default function DashboardPage() {
         </div>
       </div>
     </div>
+    </AuthGuard>
   )
 }
