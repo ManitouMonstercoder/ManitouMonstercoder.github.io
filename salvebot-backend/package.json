@@ -1,0 +1,35 @@
+{
+  "name": "salvebot-backend",
+  "version": "1.0.0",
+  "description": "Salvebot Cloudflare Workers Backend with RAG functionality",
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "wrangler dev src/index.ts",
+    "deploy": "wrangler deploy src/index.ts",
+    "tail": "wrangler tail",
+    "types": "wrangler types",
+    "test": "vitest",
+    "cf-typegen": "wrangler types"
+  },
+  "dependencies": {
+    "@cloudflare/ai": "^1.0.59",
+    "@hono/zod-validator": "^0.2.2",
+    "@langchain/textsplitters": "^0.0.3",
+    "bcryptjs": "^3.0.2",
+    "hono": "^4.5.8",
+    "jose": "^6.0.11",
+    "nanoid": "^5.1.5",
+    "openai": "^4.63.0",
+    "pdf-parse": "^1.1.1",
+    "stripe": "^18.1.0",
+    "zod": "^3.24.4"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20241106.0",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/pdf-parse": "^1.1.4",
+    "typescript": "^5.6.2",
+    "vitest": "^2.0.5",
+    "wrangler": "^3.78.12"
+  }
+}

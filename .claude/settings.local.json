@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git clone:*)",
+      "Bash(mkdir:*)",
+      "Bash(chmod:*)",
+      "Bash(npm install)",
+      "Bash(npm install:*)",
+      "Bash(wrangler whoami:*)",
+      "Bash(npm run build:*)",
+      "Bash(wrangler deploy:*)",
+      "Bash(wrangler kv:namespace create:*)",
+      "Bash(wrangler kv namespace:*)",
+      "Bash(curl:*)",
+      "Bash(rm:*)",
+      "Bash(git rm:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(git filter-branch:*)",
+      "Bash(git init:*)"
+    ],
+    "deny": []
+  }
+}

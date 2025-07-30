@@ -1,0 +1,48 @@
+{
+  "name": "salvebot",
+  "version": "1.0.0",
+  "description": "Open-source SaaS chatbot platform with RAG technology",
+  "private": true,
+  "workspaces": [
+    "salvebot-frontend",
+    "salvebot-backend"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
+    "dev:frontend": "cd salvebot-frontend && npm run dev",
+    "dev:backend": "cd salvebot-backend && npm run dev",
+    "build": "npm run build:frontend && npm run build:backend",
+    "build:frontend": "cd salvebot-frontend && npm run build",
+    "build:backend": "cd salvebot-backend && npm run build",
+    "deploy": "npm run deploy:frontend && npm run deploy:backend",
+    "deploy:frontend": "cd salvebot-frontend && npm run deploy",
+    "deploy:backend": "cd salvebot-backend && npm run deploy",
+    "install:all": "npm install && cd salvebot-frontend && npm install && cd ../salvebot-backend && npm install",
+    "clean": "rm -rf salvebot-frontend/node_modules salvebot-frontend/.next salvebot-frontend/out salvebot-backend/node_modules salvebot-backend/dist",
+    "lint": "cd salvebot-frontend && npm run lint",
+    "test": "concurrently \"cd salvebot-frontend && npm test\" \"cd salvebot-backend && npm test\""
+  },
+  "keywords": [
+    "chatbot",
+    "saas",
+    "rag",
+    "openai",
+    "nextjs",
+    "cloudflare-workers",
+    "stripe",
+    "open-source"
+  ],
+  "author": "Salvebot Contributors",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/salvebot.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/salvebot/issues"
+  },
+  "homepage": "https://yourusername.github.io/salvebot",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
