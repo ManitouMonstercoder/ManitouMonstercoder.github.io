@@ -46,7 +46,7 @@ export default function SignUpPage() {
         company: formData.company || undefined
       })
 
-      if (response.success && response.token) {
+      if (response.token) {
         authUtils.saveToken(response.token)
         router.push('/dashboard')
       } else {
@@ -60,123 +60,149 @@ export default function SignUpPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-muted/50">
-      <div className="max-w-md w-full space-y-8 p-8">
-        <div className="text-center">
-          <Link href="/" className="flex items-center justify-center space-x-2 mb-8">
-            <Bot className="h-8 w-8 text-primary" />
-            <span className="text-2xl font-bold">Salvebot</span>
-          </Link>
-          <h2 className="text-3xl font-bold">Create your account</h2>
-          <p className="mt-2 text-muted-foreground">
-            Start your free trial today. No credit card required.
-          </p>
-        </div>
-        
-        {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
-            {error}
-          </div>
-        )}
-        
-        <form className="space-y-6" onSubmit={handleSubmit}>
-          <div>
-            <label htmlFor="name" className="block text-sm font-medium mb-2">
-              Full name
-            </label>
-            <input
-              id="name"
-              name="name"
-              type="text"
-              required
-              value={formData.name}
-              onChange={handleInputChange}
-              className="w-full px-3 py-2 border border-input bg-background rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
-              placeholder="Enter your full name"
-            />
-          </div>
-          
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium mb-2">
-              Email address
-            </label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              required
-              value={formData.email}
-              onChange={handleInputChange}
-              className="w-full px-3 py-2 border border-input bg-background rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
-              placeholder="Enter your email"
-            />
-          </div>
-          
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium mb-2">
-              Password
-            </label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              required
-              value={formData.password}
-              onChange={handleInputChange}
-              className="w-full px-3 py-2 border border-input bg-background rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
-              placeholder="Create a password"
-            />
-          </div>
-          
-          <div>
-            <label htmlFor="company" className="block text-sm font-medium mb-2">
-              Company name (optional)
-            </label>
-            <input
-              id="company"
-              name="company"
-              type="text"
-              value={formData.company}
-              onChange={handleInputChange}
-              className="w-full px-3 py-2 border border-input bg-background rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
-              placeholder="Enter your company name"
-            />
-          </div>
-          
-          <div className="flex items-center">
-            <input
-              id="terms"
-              name="terms"
-              type="checkbox"
-              required
-              checked={formData.terms}
-              onChange={handleInputChange}
-              className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
-            />
-            <label htmlFor="terms" className="ml-2 block text-sm text-muted-foreground">
-              I agree to the{' '}
-              <Link href="/terms" className="text-primary hover:underline">
-                Terms of Service
-              </Link>{' '}
-              and{' '}
-              <Link href="/privacy" className="text-primary hover:underline">
-                Privacy Policy
-              </Link>
-            </label>
-          </div>
-          
-          <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? 'Creating Account...' : 'Create Account'}
-          </Button>
-        </form>
-        
-        <div className="text-center">
-          <p className="text-sm text-muted-foreground">
-            Already have an account?{' '}
-            <Link href="/signin" className="text-primary hover:underline">
-              Sign in
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-muted/30 py-12">
+      <div className="max-w-lg w-full mx-4">
+        <div className="bg-card p-10 rounded-3xl border border-border/50 card-shadow-lg">
+          <div className="text-center mb-10">
+            <Link href="/" className="inline-flex items-center space-x-3 mb-8 group">
+              <div className="p-3 bg-primary/10 rounded-2xl group-hover:bg-primary/20 transition-colors">
+                <Bot className="h-7 w-7 text-primary" />
+              </div>
+              <span className="text-2xl font-semibold">Salvebot</span>
             </Link>
-          </p>
+            <h1 className="text-3xl lg:text-4xl font-bold mb-3">Create your account</h1>
+            <p className="text-lg text-muted-foreground">
+              Start your free trial today. No credit card required.
+            </p>
+          </div>
+        
+          {error && (
+            <div className="bg-destructive/10 border border-destructive/20 text-destructive px-6 py-4 rounded-xl mb-8 animate-fade-in">
+              <div className="flex items-center">
+                <div className="w-5 h-5 bg-destructive/20 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                  <span className="text-destructive text-xs">!</span>
+                </div>
+                <span className="text-sm">{error}</span>
+              </div>
+            </div>
+          )}
+        
+          <form className="space-y-8" onSubmit={handleSubmit}>
+            <div className="space-y-2">
+              <label htmlFor="name" className="form-label">
+                Full name *
+              </label>
+              <input
+                id="name"
+                name="name"
+                type="text"
+                required
+                value={formData.name}
+                onChange={handleInputChange}
+                className="form-input"
+                placeholder="Enter your real first and last name"
+                minLength={2}
+                maxLength={50}
+              />
+              <p className="text-xs text-muted-foreground">
+                Please enter your real first and last name as it appears on official documents
+              </p>
+            </div>
+            
+            <div className="space-y-2">
+              <label htmlFor="email" className="form-label">
+                Business email address *
+              </label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                required
+                value={formData.email}
+                onChange={handleInputChange}
+                className="form-input"
+                placeholder="Enter your professional email address"
+              />
+              <p className="text-xs text-muted-foreground">
+                Please use a professional email. Temporary/disposable emails are not allowed.
+              </p>
+            </div>
+            
+            <div className="space-y-2">
+              <label htmlFor="password" className="form-label">
+                Password *
+              </label>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                required
+                value={formData.password}
+                onChange={handleInputChange}
+                className="form-input"
+                placeholder="Create a strong password"
+                minLength={8}
+                maxLength={128}
+              />
+              <p className="text-xs text-muted-foreground">
+                Must contain at least 8 characters with uppercase, lowercase, number, and special character
+              </p>
+            </div>
+            
+            <div className="space-y-2">
+              <label htmlFor="company" className="form-label">
+                Company name (optional)
+              </label>
+              <input
+                id="company"
+                name="company"
+                type="text"
+                value={formData.company}
+                onChange={handleInputChange}
+                className="form-input"
+                placeholder="Enter your company name"
+              />
+            </div>
+          
+            <div className="flex items-start space-x-3">
+              <input
+                id="terms"
+                name="terms"
+                type="checkbox"
+                required
+                checked={formData.terms}
+                onChange={handleInputChange}
+                className="mt-1 h-5 w-5 text-primary focus:ring-primary border-border rounded-md"
+              />
+              <label htmlFor="terms" className="text-sm text-muted-foreground leading-relaxed">
+                I agree to the{' '}
+                <Link href="/terms" className="text-primary hover:underline font-medium">
+                  Terms of Service
+                </Link>{' '}
+                and{' '}
+                <Link href="/privacy" className="text-primary hover:underline font-medium">
+                  Privacy Policy
+                </Link>
+              </label>
+            </div>
+            
+            <Button 
+              type="submit" 
+              className="w-full btn-hover py-4 text-base font-medium shadow-lg" 
+              disabled={isLoading}
+            >
+              {isLoading ? 'Creating Account...' : 'Create Account'}
+            </Button>
+          </form>
+          
+          <div className="text-center pt-6 border-t border-border/50">
+            <p className="text-muted-foreground">
+              Already have an account?{' '}
+              <Link href="/signin" className="text-primary hover:underline font-medium">
+                Sign in
+              </Link>
+            </p>
+          </div>
         </div>
       </div>
     </div>

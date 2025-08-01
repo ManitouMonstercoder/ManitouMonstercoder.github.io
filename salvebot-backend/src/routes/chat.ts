@@ -83,16 +83,28 @@ async function verifyChatbotAccess(
 
 async function getChatbotDocuments(chatbotId: string, env: Env): Promise<DocumentChunk[]> {
   try {
-    // Get all documents for this chatbot
-    const documentsList = await env.DOCUMENTS.list({ prefix: `chatbot:${chatbotId}:` })
+    // Get all document references for this chatbot
+    const documentsList = await env.DOCUMENTS.list({ prefix: `chatbot:${chatbotId}:doc:` })
     const chunks: DocumentChunk[] = []
 
     for (const key of documentsList.keys) {
-      const documentData = await env.DOCUMENTS.get(key.name)
-      if (documentData) {
-        const document: Document = JSON.parse(documentData)
-        if (document.status === 'ready' && document.chunks) {
-          chunks.push(...document.chunks)
+      // Get the document reference (points to actual document)
+      const docRefPath = await env.DOCUMENTS.get(key.name)
+      if (docRefPath) {
+        // Get the actual document data
+        const documentData = await env.DOCUMENTS.get(docRefPath)
+        if (documentData) {
+          const document: Document = JSON.parse(documentData)
+          if (document.status === 'ready' && document.chunks) {
+            // Get all chunks for this document
+            for (const chunk of document.chunks) {
+              const chunkData = await env.DOCUMENTS.get(`chunk:${chunk.id}`)
+              if (chunkData) {
+                const fullChunk: DocumentChunk = JSON.parse(chunkData)
+                chunks.push(fullChunk)
+              }
+            }
+          }
         }
       }
     }

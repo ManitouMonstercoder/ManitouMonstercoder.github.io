@@ -27,7 +27,7 @@ export function AuthGuard({ children, redirectTo = '/signin' }: AuthGuardProps) 
       try {
         // Verify token with backend
         const response = await api.me()
-        if (response.success) {
+        if (response.user || response.token) {
           setIsAuthenticated(true)
         } else {
           authUtils.removeToken()

@@ -5,6 +5,7 @@ import { Env } from './types'
 import { authRouter } from './routes/auth'
 import { chatbotsRouter } from './routes/chatbots'
 import { chatRouter } from './routes/chat'
+import { documentsRouter } from './routes/documents'
 import { corsHeaders, jsonResponse, errorResponse } from './lib/utils'
 
 const app = new Hono<{ Bindings: Env }>()
@@ -41,6 +42,7 @@ app.get('/', (c) => {
 app.route('/api/auth', authRouter)
 app.route('/api/chatbots', chatbotsRouter)
 app.route('/api/chat', chatRouter)
+app.route('/api/documents', documentsRouter)
 
 // Stripe webhooks
 app.post('/api/webhooks/stripe', async (c) => {
@@ -83,12 +85,6 @@ app.post('/api/webhooks/stripe', async (c) => {
   }
 })
 
-// File upload endpoint
-app.post('/api/files/upload', async (c) => {
-  // TODO: Implement file upload to R2 bucket
-  // This would handle PDF/text file uploads and process them with RAG
-  return errorResponse('File upload not implemented yet', 501)
-})
 
 // Domain verification endpoints
 app.post('/api/domains/verify', async (c) => {

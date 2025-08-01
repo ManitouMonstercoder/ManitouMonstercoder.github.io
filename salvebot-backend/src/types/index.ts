@@ -34,9 +34,13 @@ export interface User {
   hashedPassword: string
   createdAt: string
   updatedAt: string
+  lastLoginAt?: string
   stripeCustomerId?: string
   subscriptionStatus: 'active' | 'inactive' | 'trial' | 'cancelled'
   trialEndDate?: string
+  securityScore?: number
+  isNewUser?: boolean
+  loginCount?: number
 }
 
 export interface Chatbot {

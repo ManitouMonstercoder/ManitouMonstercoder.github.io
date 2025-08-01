@@ -22,7 +22,7 @@ Ensure these are completed before testing:
    - Name: Test User
    - Email: test@example.com
    - Password: TestPassword123
-   - Company: Test Company (optional)
+   - Company:  (optional)
 3. **Expected**: Account created, redirected to dashboard
 4. **Verify**: User appears in Cloudflare KV USERS namespace
 

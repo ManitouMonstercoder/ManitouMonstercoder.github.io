@@ -16,36 +16,89 @@ export class RAGService {
     })
   }
 
-  async processDocument(document: Document, content: string): Promise<DocumentChunk[]> {
+  async processDocument(content: string, fileType: string): Promise<Array<{
+    content: string
+    embedding: number[]
+    metadata: { page?: number; section?: string }
+  }>> {
+    // Preprocess content based on file type
+    let processedContent = content
+    
+    if (fileType === 'application/pdf') {
+      // For PDFs, we assume the content has already been extracted
+      // Clean up common PDF artifacts
+      processedContent = content
+        .replace(/\s+/g, ' ')
+        .replace(/\n{3,}/g, '\n\n')
+        .trim()
+    } else if (fileType === 'text/markdown') {
+      // For Markdown, preserve structure but clean up
+      processedContent = content
+        .replace(/^#{1,6}\s*/gm, '') // Remove markdown headers for cleaner chunks
+        .replace(/\*\*(.+?)\*\*/g, '$1') // Remove bold formatting
+        .replace(/\*(.+?)\*/g, '$1') // Remove italic formatting
+        .replace(/\[(.+?)\]\(.+?\)/g, '$1') // Convert links to text
+    }
+    
     // Split text into chunks
-    const textChunks = await this.textSplitter.splitText(content)
+    const textChunks = await this.textSplitter.splitText(processedContent)
     
-    // Generate embeddings for each chunk
-    const chunks: DocumentChunk[] = []
+    // Generate embeddings for each chunk in batches to avoid rate limits
+    const chunks = []
+    const batchSize = 5
     
-    for (let i = 0; i < textChunks.length; i++) {
-      const chunk = textChunks[i]
+    for (let i = 0; i < textChunks.length; i += batchSize) {
+      const batch = textChunks.slice(i, i + batchSize)
       
-      // Generate embedding
-      const embeddingResponse = await this.openai.embeddings.create({
-        model: 'text-embedding-3-small',
-        input: chunk,
+      // Process batch
+      const batchPromises = batch.map(async (chunk, batchIndex) => {
+        const chunkIndex = i + batchIndex
+        
+        // Add small delay between requests
+        if (chunkIndex > 0) {
+          await new Promise(resolve => setTimeout(resolve, 100))
+        }
+        
+        try {
+          const embeddingResponse = await this.openai.embeddings.create({
+            model: 'text-embedding-3-small',
+            input: chunk,
+          })
+          
+          return {
+            content: chunk,
+            embedding: embeddingResponse.data[0].embedding,
+            metadata: {
+              page: Math.floor(chunkIndex / 5) + 1, // Rough page estimation
+              section: this.extractSection(chunk)
+            }
+          }
+        } catch (error) {
+          console.error(`Error processing chunk ${chunkIndex}:`, error)
+          throw error
+        }
       })
       
-      const documentChunk: DocumentChunk = {
-        id: generateId(),
-        documentId: document.id,
-        content: chunk,
-        embedding: embeddingResponse.data[0].embedding,
-        metadata: {
-          page: Math.floor(i / 5) + 1, // Rough page estimation
-        }
-      }
-      
-      chunks.push(documentChunk)
+      const batchResults = await Promise.all(batchPromises)
+      chunks.push(...batchResults)
     }
     
     return chunks
+  }
+
+  private extractSection(chunk: string): string | undefined {
+    // Try to extract a section header from the chunk
+    const lines = chunk.split('\n')
+    for (const line of lines.slice(0, 3)) { // Check first 3 lines
+      const trimmed = line.trim()
+      if (trimmed.length > 0 && trimmed.length < 100) {
+        // Likely a header if it's short and at the beginning
+        if (trimmed.endsWith(':') || /^[A-Z][^.!?]*$/.test(trimmed)) {
+          return trimmed
+        }
+      }
+    }
+    return undefined
   }
 
   async classifyMessage(message: string): Promise<'question' | 'statement' | 'other'> {

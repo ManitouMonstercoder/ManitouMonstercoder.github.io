@@ -194,7 +194,36 @@ chatbotsRouter.delete('/:id', async (c) => {
     await c.env.CHATBOTS.delete(`user:${user.id}:${chatbotId}`)
     await c.env.CHATBOTS.delete(`id:${chatbotId}`)
     
-    // TODO: Delete related documents and domains
+    // Delete related documents
+    try {
+      const documentsList = await c.env.DOCUMENTS.list({ prefix: `chatbot:${chatbotId}:doc:` })
+      
+      for (const key of documentsList.keys) {
+        const docRefPath = await c.env.DOCUMENTS.get(key.name)
+        if (docRefPath) {
+          const documentData = await c.env.DOCUMENTS.get(docRefPath)
+          if (documentData) {
+            const document = JSON.parse(documentData)
+            
+            // Delete chunks
+            for (const chunk of document.chunks || []) {
+              await c.env.DOCUMENTS.delete(`chunk:${chunk.id}`)
+            }
+            
+            // Delete document file from R2
+            await c.env.FILES_BUCKET.delete(`documents/${document.id}`)
+            
+            // Delete document record
+            await c.env.DOCUMENTS.delete(docRefPath)
+          }
+        }
+        
+        // Delete document reference
+        await c.env.DOCUMENTS.delete(key.name)
+      }
+    } catch (error) {
+      console.error('Error deleting chatbot documents:', error)
+    }
 
     return jsonResponse({ success: true })
   } catch (error) {

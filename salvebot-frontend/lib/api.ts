@@ -1,13 +1,20 @@
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://salvebot-api.fideleamazing.workers.dev'
 
 export interface AuthResponse {
-  success: boolean
-  message: string
+  success?: boolean
+  message?: string
   token?: string
   user?: {
     id: string
     name: string
     email: string
+    company?: string
+    subscriptionStatus?: string
+    trialEndDate?: string
+    isNewUser?: boolean
+    loginCount?: number
+    lastLoginAt?: string
+    securityScore?: number
   }
 }
 
@@ -100,6 +107,24 @@ class ApiClient {
     })
   }
 
+  async getChatbot(id: string): Promise<any> {
+    return this.request(`/api/chatbots/${id}`)
+  }
+
+  async updateChatbot(id: string, data: any): Promise<any> {
+    return this.request(`/api/chatbots/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    })
+  }
+
+  async deleteChatbot(id: string): Promise<any> {
+    return this.request(`/api/chatbots/${id}`, {
+      method: 'DELETE',
+    })
+  }
+
+  // Document endpoints
   async uploadDocument(file: File, chatbotId: string): Promise<any> {
     const formData = new FormData()
     formData.append('file', file)
@@ -109,6 +134,20 @@ class ApiClient {
       method: 'POST',
       body: formData,
       headers: {}, // Remove Content-Type to let browser set it for FormData
+    })
+  }
+
+  async getDocuments(chatbotId: string): Promise<any> {
+    return this.request(`/api/documents/chatbot/${chatbotId}`)
+  }
+
+  async getDocument(documentId: string): Promise<any> {
+    return this.request(`/api/documents/${documentId}`)
+  }
+
+  async deleteDocument(documentId: string): Promise<any> {
+    return this.request(`/api/documents/${documentId}`, {
+      method: 'DELETE',
     })
   }
 }

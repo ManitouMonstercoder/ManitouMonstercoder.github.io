@@ -4,6 +4,7 @@ import { z } from 'zod'
 import { Env, User } from '../types'
 import { AuthService } from '../lib/auth'
 import { StripeService } from '../lib/stripe'
+import { SecurityValidator } from '../lib/security'
 import { generateId, validateEmail, jsonResponse, errorResponse } from '../lib/utils'
 
 const authRouter = new Hono<{ Bindings: Env }>()
@@ -23,8 +24,20 @@ const signinSchema = z.object({
 authRouter.post('/signup', zValidator('json', signupSchema), async (c) => {
   const { name, email, password, company } = c.req.valid('json')
   
-  if (!validateEmail(email)) {
-    return errorResponse('Invalid email format', 400)
+  // Enhanced security validation
+  const emailValidation = SecurityValidator.validateEmail(email)
+  if (!emailValidation.valid) {
+    return errorResponse(emailValidation.reason!, 400)
+  }
+
+  const nameValidation = SecurityValidator.validateName(name)
+  if (!nameValidation.valid) {
+    return errorResponse(nameValidation.reason!, 400)
+  }
+
+  const passwordValidation = SecurityValidator.validatePassword(password)
+  if (!passwordValidation.valid) {
+    return errorResponse(passwordValidation.reason!, 400)
   }
 
   const authService = new AuthService(c.env.JWT_SECRET)
@@ -32,7 +45,7 @@ authRouter.post('/signup', zValidator('json', signupSchema), async (c) => {
   // Check if user already exists
   const existingUser = await c.env.USERS.get(email)
   if (existingUser) {
-    return errorResponse('User already exists', 409)
+    return errorResponse('An account with this email already exists. Please sign in instead.', 409)
   }
 
   try {
@@ -43,6 +56,9 @@ authRouter.post('/signup', zValidator('json', signupSchema), async (c) => {
     const userId = generateId()
     const now = new Date().toISOString()
     
+    // Generate security score
+    const securityScore = SecurityValidator.generateSecurityScore(email, name)
+    
     const user: User = {
       id: userId,
       email,
@@ -51,8 +67,12 @@ authRouter.post('/signup', zValidator('json', signupSchema), async (c) => {
       hashedPassword,
       createdAt: now,
       updatedAt: now,
+      lastLoginAt: now, // First login
       subscriptionStatus: 'trial',
-      trialEndDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString() // 14 days
+      trialEndDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(), // 14 days
+      securityScore,
+      isNewUser: true,
+      loginCount: 1
     }
 
     // Create Stripe customer
@@ -104,6 +124,16 @@ authRouter.post('/signin', zValidator('json', signinSchema), async (c) => {
       return errorResponse('Invalid credentials', 401)
     }
 
+    // Update user login tracking
+    const now = new Date().toISOString()
+    user.lastLoginAt = now
+    user.updatedAt = now
+    user.loginCount = (user.loginCount || 0) + 1
+    user.isNewUser = false // Mark as returning user after first login
+    
+    // Save updated user
+    await c.env.USERS.put(email, JSON.stringify(user))
+
     // Generate token
     const token = await authService.generateToken({ id: user.id, email: user.email })
 
@@ -114,7 +144,11 @@ authRouter.post('/signin', zValidator('json', signinSchema), async (c) => {
         name: user.name,
         company: user.company,
         subscriptionStatus: user.subscriptionStatus,
-        trialEndDate: user.trialEndDate
+        trialEndDate: user.trialEndDate,
+        isNewUser: user.isNewUser,
+        loginCount: user.loginCount,
+        lastLoginAt: user.lastLoginAt,
+        securityScore: user.securityScore
       },
       token
     })
@@ -153,7 +187,11 @@ authRouter.get('/me', async (c) => {
         name: user.name,
         company: user.company,
         subscriptionStatus: user.subscriptionStatus,
-        trialEndDate: user.trialEndDate
+        trialEndDate: user.trialEndDate,
+        isNewUser: user.isNewUser,
+        loginCount: user.loginCount,
+        lastLoginAt: user.lastLoginAt,
+        securityScore: user.securityScore
       }
     })
   } catch (error) {

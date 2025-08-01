@@ -36,7 +36,7 @@ export default function SignInPage() {
         password: formData.password
       })
 
-      if (response.success && response.token) {
+      if (response.token) {
         authUtils.saveToken(response.token)
         router.push('/dashboard')
       } else {
@@ -50,93 +50,106 @@ export default function SignInPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-muted/50">
-      <div className="max-w-md w-full space-y-8 p-8">
-        <div className="text-center">
-          <Link href="/" className="flex items-center justify-center space-x-2 mb-8">
-            <Bot className="h-8 w-8 text-primary" />
-            <span className="text-2xl font-bold">Salvebot</span>
-          </Link>
-          <h2 className="text-3xl font-bold">Sign in to your account</h2>
-          <p className="mt-2 text-muted-foreground">
-            Or{' '}
-            <Link href="/signup" className="text-primary hover:underline">
-              create a new account
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-muted/30 py-12">
+      <div className="max-w-lg w-full mx-4">
+        <div className="bg-card p-10 rounded-3xl border border-border/50 card-shadow-lg">
+          <div className="text-center mb-10">
+            <Link href="/" className="inline-flex items-center space-x-3 mb-8 group">
+              <div className="p-3 bg-primary/10 rounded-2xl group-hover:bg-primary/20 transition-colors">
+                <Bot className="h-7 w-7 text-primary" />
+              </div>
+              <span className="text-2xl font-semibold">Salvebot</span>
             </Link>
-          </p>
-        </div>
-        
-        {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
-            {error}
-          </div>
-        )}
-        
-        <form className="space-y-6" onSubmit={handleSubmit}>
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium mb-2">
-              Email address
-            </label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              required
-              value={formData.email}
-              onChange={handleInputChange}
-              className="w-full px-3 py-2 border border-input bg-background rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
-              placeholder="Enter your email"
-            />
+            <h1 className="text-3xl lg:text-4xl font-bold mb-3">Welcome back</h1>
+            <p className="text-lg text-muted-foreground">
+              Or{' '}
+              <Link href="/signup" className="text-primary hover:underline font-medium">
+                create a new account
+              </Link>
+            </p>
           </div>
           
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium mb-2">
-              Password
-            </label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              required
-              value={formData.password}
-              onChange={handleInputChange}
-              className="w-full px-3 py-2 border border-input bg-background rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
-              placeholder="Enter your password"
-            />
-          </div>
+          {error && (
+            <div className="bg-destructive/10 border border-destructive/20 text-destructive px-6 py-4 rounded-xl mb-8 animate-fade-in">
+              <div className="flex items-center">
+                <div className="w-5 h-5 bg-destructive/20 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                  <span className="text-destructive text-xs">!</span>
+                </div>
+                <span className="text-sm">{error}</span>
+              </div>
+            </div>
+          )}
           
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <input
-                id="rememberMe"
-                name="rememberMe"
-                type="checkbox"
-                checked={formData.rememberMe}
-                onChange={handleInputChange}
-                className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
-              />
-              <label htmlFor="rememberMe" className="ml-2 block text-sm text-muted-foreground">
-                Remember me
+          <form className="space-y-8" onSubmit={handleSubmit}>
+            <div className="space-y-2">
+              <label htmlFor="email" className="form-label">
+                Email address
               </label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                required
+                value={formData.email}
+                onChange={handleInputChange}
+                className="form-input"
+                placeholder="Enter your email"
+              />
             </div>
             
-            <Link href="/forgot-password" className="text-sm text-primary hover:underline">
-              Forgot your password?
-            </Link>
-          </div>
+            <div className="space-y-2">
+              <label htmlFor="password" className="form-label">
+                Password
+              </label>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                required
+                value={formData.password}
+                onChange={handleInputChange}
+                className="form-input"
+                placeholder="Enter your password"
+              />
+            </div>
+            
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <input
+                  id="rememberMe"
+                  name="rememberMe"
+                  type="checkbox"
+                  checked={formData.rememberMe}
+                  onChange={handleInputChange}
+                  className="h-5 w-5 text-primary focus:ring-primary border-border rounded-md"
+                />
+                <label htmlFor="rememberMe" className="text-sm text-muted-foreground">
+                  Remember me
+                </label>
+              </div>
+              
+              <Link href="/forgot-password" className="text-sm text-primary hover:underline font-medium">
+                Forgot password?
+              </Link>
+            </div>
+            
+            <Button 
+              type="submit" 
+              className="w-full btn-hover py-4 text-base font-medium shadow-lg" 
+              disabled={isLoading}
+            >
+              {isLoading ? 'Signing in...' : 'Sign in'}
+            </Button>
+          </form>
           
-          <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? 'Signing in...' : 'Sign in'}
-          </Button>
-        </form>
-        
-        <div className="text-center">
-          <p className="text-sm text-muted-foreground">
-            Don't have an account?{' '}
-            <Link href="/signup" className="text-primary hover:underline">
-              Sign up for free
-            </Link>
-          </p>
+          <div className="text-center pt-6 border-t border-border/50">
+            <p className="text-muted-foreground">
+              Don't have an account?{' '}
+              <Link href="/signup" className="text-primary hover:underline font-medium">
+                Sign up for free
+              </Link>
+            </p>
+          </div>
         </div>
       </div>
     </div>
