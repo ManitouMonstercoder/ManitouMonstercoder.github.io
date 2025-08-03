@@ -261,7 +261,7 @@ export default function DashboardPage() {
                           <Button 
                             variant="outline" 
                             size="sm"
-                            onClick={() => router.push(`/chatbot/${chatbot.id}`)}
+                            onClick={() => alert('Chatbot management coming soon!')}
                           >
                             Manage
                           </Button>
