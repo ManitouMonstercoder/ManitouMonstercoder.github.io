@@ -15,7 +15,9 @@ export interface AuthResponse {
     loginCount?: number
     lastLoginAt?: string
     securityScore?: number
+    isEmailVerified?: boolean
   }
+  requiresVerification?: boolean
 }
 
 export interface ApiError {
@@ -93,6 +95,27 @@ class ApiClient {
 
   async me(): Promise<AuthResponse> {
     return this.request<AuthResponse>('/api/auth/me')
+  }
+
+  async verifyEmail(email: string, code: string): Promise<AuthResponse> {
+    return this.request<AuthResponse>('/api/auth/verify-email', {
+      method: 'POST',
+      body: JSON.stringify({ email, code }),
+    })
+  }
+
+  async requestPasswordReset(email: string): Promise<{ success: boolean; message: string }> {
+    return this.request('/api/auth/request-password-reset', {
+      method: 'POST',
+      body: JSON.stringify({ email }),
+    })
+  }
+
+  async resetPassword(token: string, newPassword: string): Promise<{ success: boolean; message: string }> {
+    return this.request('/api/auth/reset-password', {
+      method: 'POST',
+      body: JSON.stringify({ token, newPassword }),
+    })
   }
 
   // Chatbot endpoints

@@ -46,7 +46,11 @@ export default function SignUpPage() {
         company: formData.company || undefined
       })
 
-      if (response.token) {
+      if (response.success && response.requiresVerification) {
+        // Redirect to email verification page
+        router.push(`/verify-email?email=${encodeURIComponent(formData.email)}`)
+      } else if (response.token) {
+        // User is already verified or verification not required
         authUtils.saveToken(response.token)
         router.push('/dashboard')
       } else {
