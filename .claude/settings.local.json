@@ -32,7 +32,8 @@
       "Bash(git stash:*)",
       "WebFetch(domain:salvebot.com)",
       "WebFetch(domain:nextjs.org)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(wrangler secret:*)"
     ],
     "deny": []
   }

@@ -16,7 +16,7 @@ app.use('*', cors({
   origin: (origin, c) => {
     const allowedOrigins = [
       c.env.CORS_ORIGIN,
-      'https://youusername.github.io',
+      'https://salvebot.com',
       'http://localhost:3000',
       'http://127.0.0.1:3000'
     ].filter(Boolean)
