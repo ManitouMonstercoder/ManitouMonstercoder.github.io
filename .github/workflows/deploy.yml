@@ -1,5 +1,6 @@
 name: Deploy Salvebot to GitHub Pages
 
+# Triggered by push to main branch or manual dispatch
 on:
   push:
     branches: [ main ]
