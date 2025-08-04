@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { BotIcon } from '@/components/icons'
@@ -9,7 +9,6 @@ import { api } from '@/lib/api'
 
 export default function ResetPasswordPage() {
   const router = useRouter()
-  const searchParams = useSearchParams()
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
@@ -18,13 +17,17 @@ export default function ResetPasswordPage() {
   const [confirmPassword, setConfirmPassword] = useState('')
 
   useEffect(() => {
-    const tokenParam = searchParams.get('token')
-    if (tokenParam) {
-      setToken(tokenParam)
-    } else {
-      setError('Invalid reset link. Please request a new password reset.')
+    // Get token from URL parameters on client side
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search)
+      const tokenParam = urlParams.get('token')
+      if (tokenParam) {
+        setToken(tokenParam)
+      } else {
+        setError('Invalid reset link. Please request a new password reset.')
+      }
     }
-  }, [searchParams])
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
