@@ -61,8 +61,27 @@ export default function VerifyEmailPage() {
   }
 
   const handleResendCode = async () => {
-    // This would need a resend endpoint, but for now we'll just show a message
-    setError('Please contact support to resend verification code')
+    if (!email) {
+      setError('Please enter your email address first')
+      return
+    }
+
+    setIsLoading(true)
+    setError('')
+    setSuccess('')
+
+    try {
+      const response = await api.resendVerificationCode(email)
+      if (response.success) {
+        setSuccess('Verification code sent successfully! Please check your email.')
+      } else {
+        setError(response.message || 'Failed to resend verification code')
+      }
+    } catch (err: any) {
+      setError(err.message || 'An error occurred while resending the code')
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -156,9 +175,10 @@ export default function VerifyEmailPage() {
               Didn't receive the code?{' '}
               <button 
                 onClick={handleResendCode}
-                className="text-primary hover:underline font-medium"
+                disabled={isLoading}
+                className="text-primary hover:underline font-medium disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Resend code
+                {isLoading ? 'Sending...' : 'Resend code'}
               </button>
             </p>
             <p className="text-muted-foreground">

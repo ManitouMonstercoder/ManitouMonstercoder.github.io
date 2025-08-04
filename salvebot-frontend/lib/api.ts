@@ -118,6 +118,13 @@ class ApiClient {
     })
   }
 
+  async resendVerificationCode(email: string): Promise<{ success: boolean; message: string }> {
+    return this.request('/api/auth/resend-verification', {
+      method: 'POST',
+      body: JSON.stringify({ email }),
+    })
+  }
+
   // Chatbot endpoints
   async getChatbots(): Promise<any> {
     return this.request('/api/chatbots')
