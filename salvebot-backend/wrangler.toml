@@ -26,6 +26,11 @@ binding = "DOMAINS"
 id = "91ef981d5c12471d8ca90962e30a13fe"
 preview_id = "77772463091241138a64c844e1bdd761"
 
+[[env.production.kv_namespaces]]
+binding = "VERIFY_KV"
+id = "f995f2c1a4664b33880b2f68099bffbe"
+preview_id = "6fb287859d154773abe5a8fefeda4b49"
+
 # R2 Bucket for file storage
 [[env.production.r2_buckets]]
 binding = "FILES_BUCKET"
@@ -82,6 +87,11 @@ preview_id = "71cfd8682d0c4ad78859b3a4a28be6dd"
 binding = "DOMAINS"
 id = "91ef981d5c12471d8ca90962e30a13fe"
 preview_id = "77772463091241138a64c844e1bdd761"
+
+[[env.development.kv_namespaces]]
+binding = "VERIFY_KV"
+id = "f995f2c1a4664b33880b2f68099bffbe"
+preview_id = "6fb287859d154773abe5a8fefeda4b49"
 
 # R2 Bucket for file storage
 [[env.development.r2_buckets]]

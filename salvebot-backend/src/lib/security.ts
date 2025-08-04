@@ -234,4 +234,47 @@ export class SecurityValidator {
 
     return Math.max(0, Math.min(100, score))
   }
+
+  // Validate complete signup data
+  async validateSignup(data: { name: string; email: string; password: string; company?: string }): Promise<{ isValid: boolean; message?: string; score: number }> {
+    const { name, email, password } = data
+
+    // Validate email
+    const emailValidation = SecurityValidator.validateEmail(email)
+    if (!emailValidation.valid) {
+      return {
+        isValid: false,
+        message: emailValidation.reason,
+        score: 0
+      }
+    }
+
+    // Validate name
+    const nameValidation = SecurityValidator.validateName(name)
+    if (!nameValidation.valid) {
+      return {
+        isValid: false,
+        message: nameValidation.reason,
+        score: 0
+      }
+    }
+
+    // Validate password
+    const passwordValidation = SecurityValidator.validatePassword(password)
+    if (!passwordValidation.valid) {
+      return {
+        isValid: false,
+        message: passwordValidation.reason,
+        score: 0
+      }
+    }
+
+    // Generate security score
+    const score = SecurityValidator.generateSecurityScore(email, name)
+
+    return {
+      isValid: true,
+      score
+    }
+  }
 }

@@ -4,6 +4,7 @@ export interface Env {
   CHATBOTS: KVNamespace
   DOCUMENTS: KVNamespace
   DOMAINS: KVNamespace
+  VERIFY_KV: KVNamespace
   
   // R2 Bucket
   FILES_BUCKET: R2Bucket
@@ -41,6 +42,8 @@ export interface User {
   securityScore?: number
   isNewUser?: boolean
   loginCount?: number
+  isEmailVerified?: boolean
+  emailVerifiedAt?: string
 }
 
 export interface Chatbot {
