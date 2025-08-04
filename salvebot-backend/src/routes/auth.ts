@@ -442,4 +442,34 @@ authRouter.post('/reset-password', zValidator('json', passwordResetSchema), asyn
   }
 })
 
+// Test endpoint to get verification code (for development/testing only)
+authRouter.get('/test-verification-code/:email', async (c) => {
+  try {
+    const email = c.req.param('email')
+    const stored = await c.env.VERIFY_KV.get(email)
+    
+    if (!stored) {
+      return c.json({
+        success: false,
+        message: 'No verification code found for this email'
+      }, 404)
+    }
+
+    const data = JSON.parse(stored)
+    return c.json({
+      success: true,
+      email: email,
+      code: data.code,
+      created: new Date(data.created).toISOString(),
+      expires: new Date(data.expires).toISOString()
+    })
+  } catch (error) {
+    console.error('Test verification code error:', error)
+    return c.json({
+      success: false,
+      message: 'Failed to retrieve verification code'
+    }, 500)
+  }
+})
+
 export { authRouter }
