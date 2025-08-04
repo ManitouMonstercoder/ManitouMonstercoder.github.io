@@ -3,53 +3,25 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
-// Simple SVG icons to avoid compatibility issues
-const BotIcon = () => (
-  <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8V4H8M4 8h16v12H4V8zm-2 6h2m16 0h2M9 13v2m6-2v2" />
-  </svg>
-)
+import { BotIcon, SparklesIcon, FileTextIcon, GlobeIcon, ZapIcon } from '@/components/icons'
 
-const PlusIcon = () => (
-  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+// Dashboard-specific icons with custom sizes
+const PlusIcon = ({ className = "h-4 w-4" }: { className?: string }) => (
+  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
   </svg>
 )
 
-const SettingsIcon = () => (
-  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+const SettingsIcon = ({ className = "h-4 w-4" }: { className?: string }) => (
+  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
   </svg>
 )
 
-const SparklesIcon = () => (
-  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3l1.5 1.5L5 6l1.5 1.5L5 9l-1.5-1.5L5 6 3.5 4.5L5 3zM19 12l-1.5-1.5L19 9l-1.5-1.5L19 6l1.5 1.5L19 9l1.5 1.5L19 12zM12 2l1 3 3 1-3 1-1 3-1-3-3-1 3-1 1-3z" />
-  </svg>
-)
-
-const FileTextIcon = () => (
-  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-  </svg>
-)
-
-const BarChart3Icon = () => (
-  <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+const BarChart3Icon = ({ className = "h-6 w-6" }: { className?: string }) => (
+  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-  </svg>
-)
-
-const GlobeIcon = () => (
-  <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
-  </svg>
-)
-
-const ZapIcon = () => (
-  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
   </svg>
 )
 import { AuthGuard } from '@/components/auth/AuthGuard'
@@ -113,13 +85,13 @@ export default function DashboardPage() {
           <div className="container mx-auto px-6 py-4 flex justify-between items-center">
             <div className="flex items-center space-x-3">
               <div className="p-2 bg-primary/10 rounded-xl">
-                <BotIcon />
+                <BotIcon className="h-6 w-6" />
               </div>
               <span className="text-xl font-semibold">Salvebot</span>
             </div>
             <div className="flex items-center space-x-3">
               <Button variant="ghost" size="sm" className="btn-hover">
-                <SettingsIcon />
+                <SettingsIcon className="h-4 w-4" />
                 Settings
               </Button>
               <Button variant="ghost" size="sm" className="btn-hover" onClick={handleSignOut}>
@@ -135,7 +107,7 @@ export default function DashboardPage() {
             {user?.isNewUser ? (
               <div className="text-center max-w-4xl mx-auto">
                 <div className="inline-flex items-center px-4 py-2 bg-brand/10 border border-brand/20 rounded-full mb-6">
-                  <SparklesIcon />
+                  <SparklesIcon className="h-4 w-4" />
                   <span className="text-sm font-medium text-brand">Welcome to Salvebot</span>
                 </div>
                 <h1 className="text-4xl lg:text-5xl font-bold mb-6">
@@ -147,7 +119,7 @@ export default function DashboardPage() {
                 <div className="bg-gradient-to-br from-brand/5 to-primary/5 border border-brand/20 rounded-2xl p-8 text-left max-w-2xl mx-auto">
                   <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center">
                     <div className="w-8 h-8 bg-brand/10 rounded-lg flex items-center justify-center mr-3">
-                      <ZapIcon />
+                      <ZapIcon className="h-4 w-4" />
                     </div>
                     Quick Start Guide
                   </h3>
@@ -210,7 +182,7 @@ export default function DashboardPage() {
             <div className="bg-card p-8 rounded-2xl border border-border/50 card-shadow hover:shadow-lg transition-all duration-300 group">
               <div className="flex items-center justify-between mb-4">
                 <div className="p-3 bg-primary/10 rounded-xl group-hover:bg-primary/20 transition-colors">
-                  <BotIcon />
+                  <BotIcon className="h-6 w-6" />
                 </div>
                 <div className="text-right">
                   <p className="text-3xl font-bold text-foreground">{chatbots.length}</p>
@@ -222,7 +194,7 @@ export default function DashboardPage() {
             <div className="bg-card p-8 rounded-2xl border border-border/50 card-shadow hover:shadow-lg transition-all duration-300 group">
               <div className="flex items-center justify-between mb-4">
                 <div className="p-3 bg-brand/10 rounded-xl group-hover:bg-brand/20 transition-colors">
-                  <BarChart3Icon />
+                  <BarChart3Icon className="h-6 w-6" />
                 </div>
                 <div className="text-right">
                   <p className="text-3xl font-bold text-foreground">1,234</p>
@@ -234,7 +206,7 @@ export default function DashboardPage() {
             <div className="bg-card p-8 rounded-2xl border border-border/50 card-shadow hover:shadow-lg transition-all duration-300 group">
               <div className="flex items-center justify-between mb-4">
                 <div className="p-3 bg-green-100 rounded-xl group-hover:bg-green-200 transition-colors">
-                  <FileTextIcon />
+                  <FileTextIcon className="h-4 w-4" />
                 </div>
                 <div className="text-right">
                   <p className="text-3xl font-bold text-foreground">45</p>
@@ -246,7 +218,7 @@ export default function DashboardPage() {
             <div className="bg-card p-8 rounded-2xl border border-border/50 card-shadow hover:shadow-lg transition-all duration-300 group">
               <div className="flex items-center justify-between mb-4">
                 <div className="p-3 bg-purple-100 rounded-xl group-hover:bg-purple-200 transition-colors">
-                  <GlobeIcon />
+                  <GlobeIcon className="h-6 w-6" />
                 </div>
                 <div className="text-right">
                   <p className="text-3xl font-bold text-foreground">3</p>
@@ -263,7 +235,7 @@ export default function DashboardPage() {
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-2xl font-bold">Your Chatbots</h2>
                 <Button onClick={() => setShowCreateModal(true)}>
-                  <PlusIcon />
+                  <PlusIcon className="h-4 w-4" />
                   New Chatbot
                 </Button>
               </div>
@@ -272,14 +244,14 @@ export default function DashboardPage() {
                 {chatbots.length === 0 ? (
                   <div className="text-center py-12 bg-card rounded-2xl border border-border/50">
                     <div className="mx-auto w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mb-4">
-                      <BotIcon />
+                      <BotIcon className="h-8 w-8" />
                     </div>
                     <h3 className="text-lg font-semibold mb-2">No chatbots yet</h3>
                     <p className="text-muted-foreground mb-6 max-w-sm mx-auto">
                       Create your first AI chatbot to start helping your customers 24/7.
                     </p>
                     <Button onClick={() => setShowCreateModal(true)}>
-                      <PlusIcon />
+                      <PlusIcon className="h-4 w-4" />
                       Create Your First Chatbot
                     </Button>
                   </div>
@@ -309,7 +281,7 @@ export default function DashboardPage() {
                           <Button 
                             variant="outline" 
                             size="sm"
-                            onClick={() => alert('Chatbot management coming soon!')}
+                            onClick={() => router.push(`/dashboard/chatbot?id=${chatbot.id}`)}
                           >
                             Manage
                           </Button>
@@ -346,19 +318,19 @@ export default function DashboardPage() {
                 className="w-full justify-start"
                 onClick={() => setShowCreateModal(true)}
               >
-                <PlusIcon />
+                <PlusIcon className="h-4 w-4" />
                 Create New Bot
               </Button>
               <Button variant="outline" className="w-full justify-start">
-                <FileTextIcon />
+                <FileTextIcon className="h-4 w-4" />
                 Upload Documents
               </Button>
               <Button variant="outline" className="w-full justify-start">
-                <GlobeIcon />
+                <GlobeIcon className="h-4 w-4" />
                 Verify Domain
               </Button>
               <Button variant="outline" className="w-full justify-start">
-                <BarChart3Icon />
+                <BarChart3Icon className="h-4 w-4" />
                 View Analytics
               </Button>
             </div>
