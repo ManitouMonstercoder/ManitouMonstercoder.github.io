@@ -17,6 +17,9 @@ concurrency:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -26,25 +29,28 @@ jobs:
         with:
           node-version: '18'
 
-      - name: Install dependencies
+      - name: Clean and install dependencies
+        working-directory: ./salvebot-frontend
         run: |
-          cd salvebot-frontend
+          rm -rf node_modules package-lock.json out
           npm install
 
       - name: Build Next.js app
-        run: |
-          cd salvebot-frontend
-          npm run build
+        working-directory: ./salvebot-frontend
         env:
           NEXT_PUBLIC_API_URL: https://salvebot-api.fideleamazing.workers.dev
           NEXT_PUBLIC_SITE_URL: https://salvebot.com
+        run: npm run build
 
       - name: Debug build output
         run: |
           echo "=== Build output directory ==="
           ls -la salvebot-frontend/out/
-          echo "=== Content of index.html (first 10 lines) ==="
-          head -10 salvebot-frontend/out/index.html || echo "No index.html found"
+          echo "=== Content of index.html (first 50 chars) ==="
+          head -c 200 salvebot-frontend/out/index.html || echo "No index.html found"
+          echo ""
+          echo "=== Checking for text files ==="
+          find salvebot-frontend/out/ -name "*.txt" -type f
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
@@ -57,6 +63,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-        environment:
-          name: github-pages
-          url: ${{ steps.deployment.outputs.page_url }}
