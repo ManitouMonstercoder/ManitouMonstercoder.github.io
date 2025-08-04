@@ -36,6 +36,10 @@ const passwordResetSchema = z.object({
   newPassword: z.string().min(8)
 })
 
+const resendVerificationSchema = z.object({
+  email: z.string().email()
+})
+
 authRouter.post('/signup', zValidator('json', signupSchema), async (c) => {
   const { name, email, password, company } = c.req.valid('json')
   
@@ -195,6 +199,58 @@ authRouter.post('/verify-email', zValidator('json', emailVerificationSchema), as
     return c.json({
       success: false,
       message: 'Failed to verify email'
+    }, 500)
+  }
+})
+
+// Resend verification code endpoint
+authRouter.post('/resend-verification', zValidator('json', resendVerificationSchema), async (c) => {
+  const { email } = c.req.valid('json')
+  
+  try {
+    // Check if user exists
+    const userData = await c.env.USERS.get(email)
+    if (!userData) {
+      return c.json({
+        success: false,
+        message: 'User not found'
+      }, 404)
+    }
+
+    const user: User = JSON.parse(userData)
+    
+    // Check if already verified
+    if (user.isEmailVerified) {
+      return c.json({
+        success: false,
+        message: 'Email is already verified'
+      }, 400)
+    }
+
+    // Generate and send new verification code
+    const emailService = new EmailService(c.env)
+    const verificationCode = emailService.generateVerificationCode()
+    
+    await emailService.storeVerificationCode(email, verificationCode)
+    const emailSent = await emailService.sendVerificationEmail(email, verificationCode, user.name)
+
+    if (!emailSent) {
+      console.error('Failed to resend verification email')
+      return c.json({
+        success: false,
+        message: 'Failed to send verification email'
+      }, 500)
+    }
+
+    return c.json({
+      success: true,
+      message: 'Verification code sent successfully'
+    })
+  } catch (error) {
+    console.error('Resend verification error:', error)
+    return c.json({
+      success: false,
+      message: 'Failed to resend verification code'
     }, 500)
   }
 })
