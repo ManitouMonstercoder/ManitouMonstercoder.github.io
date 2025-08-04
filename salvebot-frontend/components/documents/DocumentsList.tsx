@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { FileText, Trash2, Download, AlertCircle, CheckCircle2, Clock, MoreVertical } from 'lucide-react'
+import { FileTextIcon, Trash2Icon, DownloadIcon, AlertCircleIcon, CheckCircle2Icon, ClockIcon, MoreVerticalIcon } from '@/components/icons'
 import { api } from '@/lib/api'
 
 interface Document {
@@ -43,19 +43,19 @@ export function DocumentsList({ documents, onDocumentDelete, onDocumentUpdate }:
   }
 
   const getFileTypeIcon = (fileType: string) => {
-    return <FileText className="h-5 w-5" />
+    return <FileTextIcon className="h-5 w-5" />
   }
 
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'ready':
-        return <CheckCircle2 className="h-4 w-4 text-green-600" />
+        return <CheckCircle2Icon className="h-4 w-4 text-green-600" />
       case 'processing':
-        return <Clock className="h-4 w-4 text-brand" />
+        return <ClockIcon className="h-4 w-4 text-brand" />
       case 'error':
-        return <AlertCircle className="h-4 w-4 text-destructive" />
+        return <AlertCircleIcon className="h-4 w-4 text-destructive" />
       default:
-        return <Clock className="h-4 w-4 text-muted-foreground" />
+        return <ClockIcon className="h-4 w-4 text-muted-foreground" />
     }
   }
 
@@ -108,7 +108,7 @@ export function DocumentsList({ documents, onDocumentDelete, onDocumentUpdate }:
     return (
       <div className="text-center py-12">
         <div className="mx-auto w-16 h-16 bg-muted rounded-2xl flex items-center justify-center mb-4">
-          <FileText className="h-8 w-8 text-muted-foreground" />
+          <FileTextIcon className="h-8 w-8 text-muted-foreground" />
         </div>
         <h3 className="text-lg font-semibold mb-2">No documents uploaded</h3>
         <p className="text-muted-foreground mb-6 max-w-sm mx-auto">
@@ -166,7 +166,7 @@ export function DocumentsList({ documents, onDocumentDelete, onDocumentUpdate }:
                   {loadingStates[document.id] ? (
                     <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
                   ) : (
-                    <Trash2 className="h-4 w-4" />
+                    <Trash2Icon className="h-4 w-4" />
                   )}
                 </Button>
               </div>
@@ -175,7 +175,7 @@ export function DocumentsList({ documents, onDocumentDelete, onDocumentUpdate }:
             {document.status === 'error' && (
               <div className="mt-4 p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
                 <div className="flex items-center text-sm text-destructive">
-                  <AlertCircle className="h-4 w-4 mr-2 flex-shrink-0" />
+                  <AlertCircleIcon className="h-4 w-4 mr-2 flex-shrink-0" />
                   <span>Failed to process this document. Please try uploading again.</span>
                 </div>
               </div>
@@ -184,7 +184,7 @@ export function DocumentsList({ documents, onDocumentDelete, onDocumentUpdate }:
             {document.status === 'processing' && (
               <div className="mt-4 p-3 bg-brand/10 border border-brand/20 rounded-lg">
                 <div className="flex items-center text-sm text-brand">
-                  <Clock className="h-4 w-4 mr-2 flex-shrink-0" />
+                  <ClockIcon className="h-4 w-4 mr-2 flex-shrink-0" />
                   <span>Processing document and generating embeddings...</span>
                 </div>
               </div>

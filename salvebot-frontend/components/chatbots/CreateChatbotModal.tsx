@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { X, Bot, Globe, Palette, MessageSquare } from 'lucide-react'
+import { XIcon, BotIcon, GlobeIcon, PaletteIcon, MessageSquareIcon } from '@/components/icons'
 import { api } from '@/lib/api'
 
 interface CreateChatbotModalProps {
@@ -95,7 +95,7 @@ export function CreateChatbotModal({ isOpen, onClose, onSuccess }: CreateChatbot
         <div className="flex items-center justify-between p-8 border-b border-border/50">
           <div className="flex items-center space-x-3">
             <div className="p-2 bg-primary/10 rounded-xl">
-              <Bot className="h-6 w-6 text-primary" />
+              <BotIcon className="h-6 w-6 text-primary" />
             </div>
             <h2 className="text-2xl font-semibold">Create New Chatbot</h2>
           </div>
@@ -106,7 +106,7 @@ export function CreateChatbotModal({ isOpen, onClose, onSuccess }: CreateChatbot
             disabled={isLoading}
             className="h-8 w-8 p-0"
           >
-            <X className="h-5 w-5" />
+            <XIcon className="h-5 w-5" />
           </Button>
         </div>
 
@@ -126,7 +126,7 @@ export function CreateChatbotModal({ isOpen, onClose, onSuccess }: CreateChatbot
           {/* Basic Info */}
           <div className="space-y-4">
             <h3 className="text-lg font-medium flex items-center">
-              <Bot className="h-5 w-5 mr-2 text-primary" />
+              <BotIcon className="h-5 w-5 mr-2 text-primary" />
               Basic Information
             </h3>
             
@@ -172,7 +172,7 @@ export function CreateChatbotModal({ isOpen, onClose, onSuccess }: CreateChatbot
           {/* Customization */}
           <div className="space-y-4">
             <h3 className="text-lg font-medium flex items-center">
-              <Palette className="h-5 w-5 mr-2 text-primary" />
+              <PaletteIcon className="h-5 w-5 mr-2 text-primary" />
               Customization
             </h3>
 
@@ -254,7 +254,7 @@ export function CreateChatbotModal({ isOpen, onClose, onSuccess }: CreateChatbot
                 </>
               ) : (
                 <>
-                  <Bot className="h-4 w-4 mr-2" />
+                  <BotIcon className="h-4 w-4 mr-2" />
                   Create Chatbot
                 </>
               )}

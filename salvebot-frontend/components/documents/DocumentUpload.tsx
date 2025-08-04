@@ -2,7 +2,7 @@
 
 import React, { useState, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
-import { Upload, FileText, AlertCircle, CheckCircle2, X, Loader2 } from 'lucide-react'
+import { UploadIcon, FileTextIcon, AlertCircleIcon, CheckCircle2Icon, XIcon, Loader2Icon } from '@/components/icons'
 import { api } from '@/lib/api'
 
 interface DocumentUploadProps {
@@ -181,7 +181,7 @@ export function DocumentUpload({ chatbotId, onUploadSuccess, onUploadError }: Do
       >
         <div className="space-y-4">
           <div className="mx-auto w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center">
-            <Upload className="h-8 w-8 text-primary" />
+            <UploadIcon className="h-8 w-8 text-primary" />
           </div>
           
           <div>
@@ -195,7 +195,7 @@ export function DocumentUpload({ chatbotId, onUploadSuccess, onUploadError }: Do
           </div>
 
           <Button>
-            <Upload className="h-4 w-4 mr-2" />
+            <UploadIcon className="h-4 w-4 mr-2" />
             Choose Files
           </Button>
 
@@ -219,7 +219,7 @@ export function DocumentUpload({ chatbotId, onUploadSuccess, onUploadError }: Do
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center space-x-3">
                   <div className="p-2 bg-primary/10 rounded-lg">
-                    <FileText className="h-4 w-4 text-primary" />
+                    <FileTextIcon className="h-4 w-4 text-primary" />
                   </div>
                   <div>
                     <p className="text-sm font-medium">{uploadingFile.file.name}</p>
@@ -231,16 +231,16 @@ export function DocumentUpload({ chatbotId, onUploadSuccess, onUploadError }: Do
 
                 <div className="flex items-center space-x-2">
                   {uploadingFile.status === 'uploading' && (
-                    <Loader2 className="h-4 w-4 text-primary animate-spin" />
+                    <Loader2Icon className="h-4 w-4 text-primary animate-spin" />
                   )}
                   {uploadingFile.status === 'processing' && (
-                    <Loader2 className="h-4 w-4 text-brand animate-spin" />
+                    <Loader2Icon className="h-4 w-4 text-brand animate-spin" />
                   )}
                   {uploadingFile.status === 'completed' && (
-                    <CheckCircle2 className="h-4 w-4 text-green-600" />
+                    <CheckCircle2Icon className="h-4 w-4 text-green-600" />
                   )}
                   {uploadingFile.status === 'error' && (
-                    <AlertCircle className="h-4 w-4 text-destructive" />
+                    <AlertCircleIcon className="h-4 w-4 text-destructive" />
                   )}
                   
                   <Button
@@ -249,7 +249,7 @@ export function DocumentUpload({ chatbotId, onUploadSuccess, onUploadError }: Do
                     onClick={() => removeUploadingFile(uploadingFile.file)}
                     className="h-8 w-8 p-0"
                   >
-                    <X className="h-4 w-4" />
+                    <XIcon className="h-4 w-4" />
                   </Button>
                 </div>
               </div>

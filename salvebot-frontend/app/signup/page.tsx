@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { Bot } from 'lucide-react'
+import { BotIcon } from '@/components/icons'
 import { api, authUtils } from '@/lib/api'
 
 export default function SignUpPage() {
@@ -66,7 +66,7 @@ export default function SignUpPage() {
           <div className="text-center mb-10">
             <Link href="/" className="inline-flex items-center space-x-3 mb-8 group">
               <div className="p-3 bg-primary/10 rounded-2xl group-hover:bg-primary/20 transition-colors">
-                <Bot className="h-7 w-7 text-primary" />
+                <BotIcon className="h-7 w-7 text-primary" />
               </div>
               <span className="text-2xl font-semibold">Salvebot</span>
             </Link>

@@ -4,7 +4,7 @@ import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { Bot, Zap, Shield, ArrowRight, Sparkles, CheckCircle2 } from 'lucide-react'
+import { BotIcon, ZapIcon, ShieldIcon, ArrowRightIcon, SparklesIcon, CheckCircle2Icon } from '@/components/icons'
 import { authUtils } from '@/lib/api'
 
 export default function HomePage() {
@@ -24,7 +24,7 @@ export default function HomePage() {
         <div className="container mx-auto px-6 py-4 flex justify-between items-center">
           <Link href="/" className="flex items-center space-x-3 group">
             <div className="p-2 bg-primary/10 rounded-xl group-hover:bg-primary/20 transition-colors">
-              <Bot className="h-6 w-6 text-primary" />
+              <BotIcon className="h-6 w-6 text-primary" />
             </div>
             <span className="text-xl font-semibold text-foreground">Salvebot</span>
           </Link>
@@ -42,15 +42,17 @@ export default function HomePage() {
           </nav>
           
           <div className="flex items-center space-x-3">
-            <Button variant="ghost" size="sm" className="btn-hover" asChild>
-              <Link href="/signin">Sign In</Link>
-            </Button>
-            <Button size="sm" className="btn-hover shadow-lg" asChild>
-              <Link href="/signup" className="flex items-center space-x-2">
+            <Link href="/signin">
+              <Button variant="ghost" size="sm" className="btn-hover">
+                Sign In
+              </Button>
+            </Link>
+            <Link href="/signup">
+              <Button size="sm" className="btn-hover shadow-lg flex items-center space-x-2">
                 <span>Get Started</span>
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-            </Button>
+                <ArrowRightIcon className="h-4 w-4" />
+              </Button>
+            </Link>
           </div>
         </div>
       </header>
@@ -64,7 +66,7 @@ export default function HomePage() {
         
         <div className="container mx-auto px-6 text-center relative">
           <div className="inline-flex items-center px-4 py-2 bg-primary/10 border border-primary/20 rounded-full mb-8 animate-fade-in">
-            <Sparkles className="h-4 w-4 text-primary mr-2" />
+            <SparklesIcon className="h-4 w-4 text-primary mr-2" />
             <span className="text-sm font-medium text-primary">AI-Powered Customer Support</span>
           </div>
           
@@ -81,15 +83,17 @@ export default function HomePage() {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center animate-fade-in">
-            <Button size="lg" className="btn-hover shadow-lg px-8 py-4 text-base" asChild>
-              <Link href="/signup" className="flex items-center space-x-2">
+            <Link href="/signup">
+              <Button size="lg" className="btn-hover shadow-lg px-8 py-4 text-base flex items-center space-x-2">
                 <span>Start Free Trial</span>
-                <ArrowRight className="h-5 w-5" />
-              </Link>
-            </Button>
-            <Button size="lg" variant="outline" className="btn-hover px-8 py-4 text-base" asChild>
-              <Link href="/demo">View Demo</Link>
-            </Button>
+                <ArrowRightIcon className="h-5 w-5" />
+              </Button>
+            </Link>
+            <Link href="/demo">
+              <Button size="lg" variant="outline" className="btn-hover px-8 py-4 text-base">
+                View Demo
+              </Button>
+            </Link>
           </div>
           
           <div className="mt-16 text-sm text-muted-foreground animate-fade-in">
@@ -114,7 +118,7 @@ export default function HomePage() {
           <div className="grid md:grid-cols-3 gap-8 lg:gap-12">
             <div className="group text-center p-8 rounded-2xl border border-border/50 hover:border-primary/20 hover:shadow-lg transition-all duration-300 bg-card/50">
               <div className="w-20 h-20 bg-gradient-to-br from-primary/10 to-brand/10 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
-                <Bot className="h-10 w-10 text-primary" />
+                <BotIcon className="h-10 w-10 text-primary" />
               </div>
               <h3 className="text-2xl font-semibold mb-4">Smart RAG Technology</h3>
               <p className="text-muted-foreground leading-relaxed">
@@ -124,7 +128,7 @@ export default function HomePage() {
             
             <div className="group text-center p-8 rounded-2xl border border-border/50 hover:border-primary/20 hover:shadow-lg transition-all duration-300 bg-card/50">
               <div className="w-20 h-20 bg-gradient-to-br from-primary/10 to-brand/10 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
-                <Shield className="h-10 w-10 text-primary" />
+                <ShieldIcon className="h-10 w-10 text-primary" />
               </div>
               <h3 className="text-2xl font-semibold mb-4">Enterprise Security</h3>
               <p className="text-muted-foreground leading-relaxed">
@@ -134,7 +138,7 @@ export default function HomePage() {
             
             <div className="group text-center p-8 rounded-2xl border border-border/50 hover:border-primary/20 hover:shadow-lg transition-all duration-300 bg-card/50">
               <div className="w-20 h-20 bg-gradient-to-br from-primary/10 to-brand/10 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
-                <Zap className="h-10 w-10 text-primary" />
+                <ZapIcon className="h-10 w-10 text-primary" />
               </div>
               <h3 className="text-2xl font-semibold mb-4">One-Click Integration</h3>
               <p className="text-muted-foreground leading-relaxed">
@@ -171,30 +175,32 @@ export default function HomePage() {
               
               <ul className="space-y-4 mb-10">
                 <li className="flex items-center">
-                  <CheckCircle2 className="h-5 w-5 text-green-600 mr-3 flex-shrink-0" />
+                  <CheckCircle2Icon className="h-5 w-5 text-green-600 mr-3 flex-shrink-0" />
                   <span>1 intelligent chatbot</span>
                 </li>
                 <li className="flex items-center">
-                  <CheckCircle2 className="h-5 w-5 text-green-600 mr-3 flex-shrink-0" />
+                  <CheckCircle2Icon className="h-5 w-5 text-green-600 mr-3 flex-shrink-0" />
                   <span>100 conversations per month</span>
                 </li>
                 <li className="flex items-center">
-                  <CheckCircle2 className="h-5 w-5 text-green-600 mr-3 flex-shrink-0" />
+                  <CheckCircle2Icon className="h-5 w-5 text-green-600 mr-3 flex-shrink-0" />
                   <span>Upload up to 10 documents</span>
                 </li>
                 <li className="flex items-center">
-                  <CheckCircle2 className="h-5 w-5 text-green-600 mr-3 flex-shrink-0" />
+                  <CheckCircle2Icon className="h-5 w-5 text-green-600 mr-3 flex-shrink-0" />
                   <span>Domain verification</span>
                 </li>
                 <li className="flex items-center">
-                  <CheckCircle2 className="h-5 w-5 text-green-600 mr-3 flex-shrink-0" />
+                  <CheckCircle2Icon className="h-5 w-5 text-green-600 mr-3 flex-shrink-0" />
                   <span>Email support</span>
                 </li>
               </ul>
               
-              <Button className="w-full btn-hover py-4 text-base" asChild>
-                <Link href="/signup?plan=starter">Get Started</Link>
-              </Button>
+              <Link href="/signup?plan=starter">
+                <Button className="w-full btn-hover py-4 text-base">
+                  Get Started
+                </Button>
+              </Link>
             </div>
             
             <div className="bg-card p-10 rounded-3xl border-2 border-primary card-shadow-lg hover:shadow-xl transition-all duration-300 relative">
@@ -215,34 +221,36 @@ export default function HomePage() {
               
               <ul className="space-y-4 mb-10">
                 <li className="flex items-center">
-                  <CheckCircle2 className="h-5 w-5 text-green-600 mr-3 flex-shrink-0" />
+                  <CheckCircle2Icon className="h-5 w-5 text-green-600 mr-3 flex-shrink-0" />
                   <span>5 intelligent chatbots</span>
                 </li>
                 <li className="flex items-center">
-                  <CheckCircle2 className="h-5 w-5 text-green-600 mr-3 flex-shrink-0" />
+                  <CheckCircle2Icon className="h-5 w-5 text-green-600 mr-3 flex-shrink-0" />
                   <span>1,000 conversations per month</span>
                 </li>
                 <li className="flex items-center">
-                  <CheckCircle2 className="h-5 w-5 text-green-600 mr-3 flex-shrink-0" />
+                  <CheckCircle2Icon className="h-5 w-5 text-green-600 mr-3 flex-shrink-0" />
                   <span>Unlimited document uploads</span>
                 </li>
                 <li className="flex items-center">
-                  <CheckCircle2 className="h-5 w-5 text-green-600 mr-3 flex-shrink-0" />
+                  <CheckCircle2Icon className="h-5 w-5 text-green-600 mr-3 flex-shrink-0" />
                   <span>Advanced analytics dashboard</span>
                 </li>
                 <li className="flex items-center">
-                  <CheckCircle2 className="h-5 w-5 text-green-600 mr-3 flex-shrink-0" />
+                  <CheckCircle2Icon className="h-5 w-5 text-green-600 mr-3 flex-shrink-0" />
                   <span>Priority support</span>
                 </li>
                 <li className="flex items-center">
-                  <CheckCircle2 className="h-5 w-5 text-green-600 mr-3 flex-shrink-0" />
+                  <CheckCircle2Icon className="h-5 w-5 text-green-600 mr-3 flex-shrink-0" />
                   <span>Custom branding</span>
                 </li>
               </ul>
               
-              <Button className="w-full btn-hover py-4 text-base bg-gradient-to-r from-primary to-brand hover:from-primary/90 hover:to-brand/90" asChild>
-                <Link href="/signup?plan=pro">Get Started</Link>
-              </Button>
+              <Link href="/signup?plan=pro">
+                <Button className="w-full btn-hover py-4 text-base bg-gradient-to-r from-primary to-brand hover:from-primary/90 hover:to-brand/90">
+                  Get Started
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
@@ -255,7 +263,7 @@ export default function HomePage() {
             <div className="md:col-span-2">
               <Link href="/" className="flex items-center space-x-3 mb-6">
                 <div className="p-2 bg-primary/10 rounded-xl">
-                  <Bot className="h-6 w-6 text-primary" />
+                  <BotIcon className="h-6 w-6 text-primary" />
                 </div>
                 <span className="text-xl font-semibold">Salvebot</span>
               </Link>
@@ -263,14 +271,16 @@ export default function HomePage() {
                 Open-source AI chatbot platform for businesses. Create intelligent customer support bots in minutes with advanced RAG technology.
               </p>
               <div className="flex space-x-2">
-                <Button size="sm" asChild>
-                  <Link href="/signup">Get Started Free</Link>
-                </Button>
-                <Button variant="outline" size="sm" asChild>
-                  <Link href="https://github.com/salvebot/salvebot" className="flex items-center space-x-2">
+                <Link href="/signup">
+                  <Button size="sm">
+                    Get Started Free
+                  </Button>
+                </Link>
+                <Link href="https://github.com/salvebot/salvebot">
+                  <Button variant="outline" size="sm" className="flex items-center space-x-2">
                     <span>GitHub</span>
-                  </Link>
-                </Button>
+                  </Button>
+                </Link>
               </div>
             </div>
             
