@@ -8,6 +8,11 @@ export const metadata: Metadata = {
   title: 'Salvebot - AI Chatbot for Your Business',
   description: 'Create intelligent chatbots for your website using RAG technology. Upload your business documents and let AI answer customer questions.',
   keywords: 'chatbot, AI, customer service, RAG, business automation',
+  icons: {
+    icon: '/favicon.svg',
+    shortcut: '/favicon.svg',
+    apple: '/favicon.svg',
+  },
   openGraph: {
     title: 'Salvebot - AI Chatbot for Your Business',
     description: 'Create intelligent chatbots for your website using RAG technology',
