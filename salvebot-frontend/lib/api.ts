@@ -18,6 +18,7 @@ export interface AuthResponse {
     isEmailVerified?: boolean
   }
   requiresVerification?: boolean
+  requiresSignup?: boolean
 }
 
 export interface ApiError {
