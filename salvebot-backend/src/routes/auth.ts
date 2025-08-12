@@ -279,6 +279,16 @@ authRouter.post('/signin', zValidator('json', signinSchema), async (c) => {
       return errorResponse('Invalid credentials', 401)
     }
 
+    // SECURITY: Check if email is verified before allowing login
+    if (!user.isEmailVerified) {
+      return c.json({
+        success: false,
+        message: 'Please verify your email address before signing in. Check your inbox for the verification code.',
+        requiresVerification: true,
+        email: user.email
+      }, 403)
+    }
+
     // Update user login tracking
     const now = new Date().toISOString()
     user.lastLoginAt = now

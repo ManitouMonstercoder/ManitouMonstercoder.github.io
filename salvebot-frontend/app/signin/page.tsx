@@ -12,6 +12,8 @@ export default function SignInPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
   const [requiresSignup, setRequiresSignup] = useState(false)
+  const [requiresVerification, setRequiresVerification] = useState(false)
+  const [userEmail, setUserEmail] = useState('')
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -31,6 +33,7 @@ export default function SignInPage() {
     setIsLoading(true)
     setError('')
     setRequiresSignup(false)
+    setRequiresVerification(false)
 
     try {
       const response = await api.signin({
@@ -46,12 +49,27 @@ export default function SignInPage() {
         if (response.requiresSignup) {
           setRequiresSignup(true)
         }
+        if (response.requiresVerification) {
+          setRequiresVerification(true)
+          setUserEmail(response.email || formData.email)
+        }
       }
     } catch (err: any) {
-      // Handle different error types
-      if (err.response && err.response.status === 404) {
-        setError("You don't have an account. Please create a free account to get started.")
-        setRequiresSignup(true)
+      // Handle different HTTP error status codes
+      if (err.response) {
+        const status = err.response.status
+        const data = err.response.data || {}
+        
+        if (status === 404) {
+          setError("You don't have an account. Please create a free account to get started.")
+          setRequiresSignup(true)
+        } else if (status === 403 && data.requiresVerification) {
+          setError(data.message || 'Please verify your email address before signing in.')
+          setRequiresVerification(true)
+          setUserEmail(data.email || formData.email)
+        } else {
+          setError(data.message || err.message || 'An error occurred during signin')
+        }
       } else {
         setError(err.message || 'An error occurred during signin')
       }
@@ -81,15 +99,31 @@ export default function SignInPage() {
           </div>
           
           {error && (
-            <div className={`${requiresSignup ? 'bg-primary/10 border border-primary/20' : 'bg-destructive/10 border border-destructive/20'} px-6 py-4 rounded-xl mb-8 animate-fade-in`}>
+            <div className={`${
+              requiresSignup || requiresVerification 
+                ? 'bg-primary/10 border border-primary/20' 
+                : 'bg-destructive/10 border border-destructive/20'
+            } px-6 py-4 rounded-xl mb-8 animate-fade-in`}>
               <div className="flex items-center justify-between">
                 <div className="flex items-center">
-                  <div className={`w-5 h-5 ${requiresSignup ? 'bg-primary/20' : 'bg-destructive/20'} rounded-full flex items-center justify-center mr-3 flex-shrink-0`}>
-                    <span className={`${requiresSignup ? 'text-primary' : 'text-destructive'} text-xs`}>
-                      {requiresSignup ? 'i' : '!'}
+                  <div className={`w-5 h-5 ${
+                    requiresSignup || requiresVerification 
+                      ? 'bg-primary/20' 
+                      : 'bg-destructive/20'
+                  } rounded-full flex items-center justify-center mr-3 flex-shrink-0`}>
+                    <span className={`${
+                      requiresSignup || requiresVerification 
+                        ? 'text-primary' 
+                        : 'text-destructive'
+                    } text-xs`}>
+                      {requiresSignup || requiresVerification ? 'i' : '!'}
                     </span>
                   </div>
-                  <span className={`text-sm ${requiresSignup ? 'text-primary' : 'text-destructive'}`}>
+                  <span className={`text-sm ${
+                    requiresSignup || requiresVerification 
+                      ? 'text-primary' 
+                      : 'text-destructive'
+                  }`}>
                     {error}
                   </span>
                 </div>
@@ -97,6 +131,13 @@ export default function SignInPage() {
                   <Link href="/signup">
                     <Button size="sm" className="ml-4">
                       Create Account
+                    </Button>
+                  </Link>
+                )}
+                {requiresVerification && (
+                  <Link href={`/verify-email?email=${encodeURIComponent(userEmail)}`}>
+                    <Button size="sm" className="ml-4">
+                      Verify Email
                     </Button>
                   </Link>
                 )}

@@ -54,55 +54,73 @@ export class EmailService {
       console.log(`🔐 VERIFICATION CODE for ${email}: ${code}`)
       console.log(`📧 Attempting to send email to: ${name} <${email}>`)
       
-      // Try SendPulse email delivery
+      // Try SendPulse email delivery with enhanced debugging
       try {
+        console.log('🔍 Checking SendPulse credentials...')
+        console.log(`SENDPULSE_USER_ID: ${this.env.SENDPULSE_USER_ID ? '✅ SET' : '❌ MISSING'}`)
+        console.log(`SENDPULSE_SECRET: ${this.env.SENDPULSE_SECRET ? '✅ SET' : '❌ MISSING'}`)
+        
         if (this.env.SENDPULSE_USER_ID && this.env.SENDPULSE_SECRET) {
-          console.log('✅ SendPulse credentials found, attempting to send email')
+          console.log('📧 Attempting SendPulse email delivery...')
           
           // Use a Promise wrapper for the callback-based SendPulse API
-          // Note: Cloudflare Workers doesn't have /tmp/, but SendPulse handles token storage internally
           await new Promise<void>((resolve, reject) => {
-            sendpulse.init(this.env.SENDPULSE_USER_ID, this.env.SENDPULSE_SECRET, '', (token: any) => {
-              if (token && token.is_error) {
-                console.error('❌ SendPulse authentication error:', token)
-                resolve() // Don't reject, just log and continue
-                return
-              }
-
-              console.log('✅ SendPulse authenticated successfully')
-
-              const emailData = {
-                "html": this.getVerificationEmailTemplate(name, code),
-                "text": `Hi ${name},\n\nYour verification code is: ${code}\n\nThis code will expire in 10 minutes.\n\nBest regards,\nThe Salvebot Team`,
-                "subject": "Verify your email address - Salvebot",
-                "from": {
-                  "name": "Salvebot",
-                  "email": "support@salvebot.com"
-                },
-                "to": [
-                  {
-                    "name": name,
-                    "email": email
-                  }
-                ]
-              }
-
-              sendpulse.smtpSendMail((data: any) => {
-                if (data && data.result) {
-                  console.log('✅ Verification email sent successfully via SendPulse')
-                  console.log('📧 SendPulse response:', data)
-                } else {
-                  console.error('❌ SendPulse send error:', data)
+            try {
+              sendpulse.init(this.env.SENDPULSE_USER_ID, this.env.SENDPULSE_SECRET, '', (token: any) => {
+                console.log('📡 SendPulse init callback received:', token)
+                
+                if (token && token.is_error) {
+                  console.error('❌ SendPulse authentication failed:', JSON.stringify(token))
+                  resolve() // Don't block signup
+                  return
                 }
-                resolve() // Always resolve to not block signup
-              }, emailData)
-            })
+
+                if (!token) {
+                  console.error('❌ SendPulse: No token received')
+                  resolve()
+                  return
+                }
+
+                console.log('✅ SendPulse authenticated successfully')
+
+                const emailData = {
+                  "html": this.getVerificationEmailTemplate(name, code),
+                  "text": `Hi ${name},\n\nYour verification code is: ${code}\n\nThis code will expire in 10 minutes.\n\nBest regards,\nThe Salvebot Team`,
+                  "subject": "Verify your email address - Salvebot",
+                  "from": {
+                    "name": "Salvebot Support",
+                    "email": "support@salvebot.com"
+                  },
+                  "to": [
+                    {
+                      "name": name,
+                      "email": email
+                    }
+                  ]
+                }
+
+                console.log('📤 Sending email via SendPulse SMTP...')
+                sendpulse.smtpSendMail((data: any) => {
+                  console.log('📧 SendPulse SMTP response:', JSON.stringify(data))
+                  
+                  if (data && (data.result === true || data.success === true)) {
+                    console.log('✅ Verification email sent successfully via SendPulse')
+                  } else {
+                    console.error('❌ SendPulse send failed:', JSON.stringify(data))
+                  }
+                  resolve()
+                }, emailData)
+              })
+            } catch (initError) {
+              console.error('❌ SendPulse init error:', initError)
+              resolve()
+            }
           })
         } else {
-          console.log('⚠️  SendPulse credentials not found, using console logging fallback')
+          console.log('⚠️  SendPulse credentials missing - check SENDPULSE_USER_ID and SENDPULSE_SECRET secrets')
         }
         
-        console.log(`📝 Verification code for testing: ${code}`)
+        console.log(`📝 Verification code for testing/backup: ${code}`)
         return true
       } catch (sendpulseError) {
         console.error('❌ SendPulse error:', sendpulseError)
