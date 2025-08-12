@@ -8,6 +8,7 @@
 ## 🌟 Features
 
 ### For Business Owners
+
 - ✅ **Easy Signup & Authentication** - Quick registration with email/password
 - ✅ **Document Upload** - Upload PDFs, TXT, MD files or fill business info forms  
 - ✅ **Domain Management** - Add and verify business domains
@@ -16,12 +17,14 @@
 - ✅ **Secure Deployment** - Chatbot only works on verified domains with active subscriptions
 
 ### For Customers
+
 - 🤖 **Intelligent Responses** - RAG-powered answers based on business knowledge
 - 💬 **Natural Conversations** - OpenAI GPT-4 powered chat interface
 - 📱 **Responsive Widget** - Works on desktop and mobile
 - ⚡ **Fast & Reliable** - Global edge deployment via Cloudflare
 
 ### For Developers
+
 - 🏗️ **Modern Stack** - Next.js 15, Cloudflare Workers, TypeScript
 - 🌐 **Serverless** - No servers to maintain, scales automatically
 - 🔓 **Open Source** - MIT license, fork and customize freely
@@ -30,12 +33,14 @@
 ## 🚀 Quick Start
 
 ### 1. Fork & Clone
+
 ```bash
 git clone https://github.com/yourusername/salvebot.git
 cd salvebot
 ```
 
 ### 2. Frontend Setup (GitHub Pages)
+
 ```bash
 cd salvebot-frontend
 npm install
@@ -45,6 +50,7 @@ npm run dev
 ```
 
 ### 3. Backend Setup (Cloudflare Workers)
+
 ```bash
 cd salvebot-backend
 npm install
@@ -53,6 +59,7 @@ npm install
 ```
 
 ### 4. Configure GitHub Pages
+
 1. Go to your repository settings
 2. Enable GitHub Pages with GitHub Actions
 3. Push to main branch - automatic deployment!
@@ -77,6 +84,7 @@ npm install
 ```
 
 ### Tech Stack
+
 - **Frontend**: Next.js 15, React 19, Tailwind CSS, TypeScript
 - **Backend**: Cloudflare Workers, Hono, TypeScript
 - **Storage**: Cloudflare KV, R2, D1
@@ -295,6 +303,7 @@ MIT License - see [LICENSE](./LICENSE) file for details.
 ## 🌟 Acknowledgments
 
 Built with amazing open-source tools:
+
 - [Next.js](https://nextjs.org/) - React framework
 - [Cloudflare Workers](https://workers.cloudflare.com/) - Serverless platform
 - [OpenAI](https://openai.com/) - AI models

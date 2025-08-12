@@ -264,7 +264,11 @@ authRouter.post('/signin', zValidator('json', signinSchema), async (c) => {
     // Get user
     const userData = await c.env.USERS.get(email)
     if (!userData) {
-      return errorResponse('Invalid credentials', 401)
+      return c.json({
+        success: false,
+        message: "You don't have an account. Please create a free account to get started.",
+        requiresSignup: true
+      }, 404)
     }
 
     const user: User = JSON.parse(userData)

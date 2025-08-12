@@ -11,6 +11,7 @@ export default function SignInPage() {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
+  const [requiresSignup, setRequiresSignup] = useState(false)
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -29,6 +30,7 @@ export default function SignInPage() {
     e.preventDefault()
     setIsLoading(true)
     setError('')
+    setRequiresSignup(false)
 
     try {
       const response = await api.signin({
@@ -41,9 +43,18 @@ export default function SignInPage() {
         router.push('/dashboard')
       } else {
         setError(response.message || 'Failed to sign in')
+        if (response.requiresSignup) {
+          setRequiresSignup(true)
+        }
       }
     } catch (err: any) {
-      setError(err.message || 'An error occurred during signin')
+      // Handle different error types
+      if (err.response && err.response.status === 404) {
+        setError("You don't have an account. Please create a free account to get started.")
+        setRequiresSignup(true)
+      } else {
+        setError(err.message || 'An error occurred during signin')
+      }
     } finally {
       setIsLoading(false)
     }
@@ -70,12 +81,25 @@ export default function SignInPage() {
           </div>
           
           {error && (
-            <div className="bg-destructive/10 border border-destructive/20 text-destructive px-6 py-4 rounded-xl mb-8 animate-fade-in">
-              <div className="flex items-center">
-                <div className="w-5 h-5 bg-destructive/20 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
-                  <span className="text-destructive text-xs">!</span>
+            <div className={`${requiresSignup ? 'bg-primary/10 border border-primary/20' : 'bg-destructive/10 border border-destructive/20'} px-6 py-4 rounded-xl mb-8 animate-fade-in`}>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <div className={`w-5 h-5 ${requiresSignup ? 'bg-primary/20' : 'bg-destructive/20'} rounded-full flex items-center justify-center mr-3 flex-shrink-0`}>
+                    <span className={`${requiresSignup ? 'text-primary' : 'text-destructive'} text-xs`}>
+                      {requiresSignup ? 'i' : '!'}
+                    </span>
+                  </div>
+                  <span className={`text-sm ${requiresSignup ? 'text-primary' : 'text-destructive'}`}>
+                    {error}
+                  </span>
                 </div>
-                <span className="text-sm">{error}</span>
+                {requiresSignup && (
+                  <Link href="/signup">
+                    <Button size="sm" className="ml-4">
+                      Create Account
+                    </Button>
+                  </Link>
+                )}
               </div>
             </div>
           )}
