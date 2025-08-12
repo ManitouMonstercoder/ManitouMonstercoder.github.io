@@ -486,4 +486,24 @@ authRouter.get('/test-verification-code/:email', async (c) => {
   }
 })
 
+// Test endpoint to check SendPulse configuration (for debugging)
+authRouter.get('/test-sendpulse-config', async (c) => {
+  try {
+    return c.json({
+      success: true,
+      credentials: {
+        sendpulseUserId: c.env.SENDPULSE_USER_ID ? 'SET' : 'MISSING',
+        sendpulseSecret: c.env.SENDPULSE_SECRET ? 'SET' : 'MISSING',
+        environment: c.env.ENVIRONMENT || 'unknown'
+      }
+    })
+  } catch (error) {
+    console.error('Test SendPulse config error:', error)
+    return c.json({
+      success: false,
+      message: 'Failed to check SendPulse config'
+    }, 500)
+  }
+})
+
 export { authRouter }

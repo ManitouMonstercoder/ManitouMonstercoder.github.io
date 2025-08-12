@@ -1,11 +1,72 @@
 import { Env } from '../types'
-const sendpulse = require('sendpulse-api')
+
+interface SendPulseTokenResponse {
+  access_token: string
+  token_type: string
+  expires_in: number
+}
 
 export class EmailService {
   private env: Env
 
   constructor(env: Env) {
     this.env = env
+  }
+
+  // Get SendPulse access token using Fetch API (Cloudflare Workers compatible)
+  private async getSendPulseToken(): Promise<string | null> {
+    try {
+      const response = await fetch('https://api.sendpulse.com/oauth/access_token', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          grant_type: 'client_credentials',
+          client_id: this.env.SENDPULSE_USER_ID,
+          client_secret: this.env.SENDPULSE_SECRET,
+        }),
+      })
+
+      if (!response.ok) {
+        console.error('❌ SendPulse token request failed:', response.status, response.statusText)
+        return null
+      }
+
+      const data: SendPulseTokenResponse = await response.json()
+      console.log('✅ SendPulse token obtained successfully')
+      return data.access_token
+    } catch (error) {
+      console.error('❌ SendPulse token error:', error)
+      return null
+    }
+  }
+
+  // Send email via SendPulse SMTP API using Fetch
+  private async sendPulseEmail(token: string, emailData: any): Promise<boolean> {
+    try {
+      const response = await fetch('https://api.sendpulse.com/smtp/emails', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(emailData),
+      })
+
+      if (!response.ok) {
+        const errorText = await response.text()
+        console.error('❌ SendPulse email send failed:', response.status, errorText)
+        return false
+      }
+
+      const result = await response.json()
+      console.log('✅ SendPulse email sent successfully:', result)
+      return true
+    } catch (error) {
+      console.error('❌ SendPulse email send error:', error)
+      return false
+    }
   }
 
   // Generate a 6-digit verification code
@@ -54,68 +115,48 @@ export class EmailService {
       console.log(`🔐 VERIFICATION CODE for ${email}: ${code}`)
       console.log(`📧 Attempting to send email to: ${name} <${email}>`)
       
-      // Try SendPulse email delivery with enhanced debugging
+      // Try SendPulse email delivery using Fetch API (Cloudflare Workers compatible)
       try {
         console.log('🔍 Checking SendPulse credentials...')
         console.log(`SENDPULSE_USER_ID: ${this.env.SENDPULSE_USER_ID ? '✅ SET' : '❌ MISSING'}`)
         console.log(`SENDPULSE_SECRET: ${this.env.SENDPULSE_SECRET ? '✅ SET' : '❌ MISSING'}`)
         
         if (this.env.SENDPULSE_USER_ID && this.env.SENDPULSE_SECRET) {
-          console.log('📧 Attempting SendPulse email delivery...')
+          console.log('📧 Attempting SendPulse email delivery via Fetch API...')
           
-          // Use a Promise wrapper for the callback-based SendPulse API
-          await new Promise<void>((resolve, reject) => {
-            try {
-              sendpulse.init(this.env.SENDPULSE_USER_ID, this.env.SENDPULSE_SECRET, '', (token: any) => {
-                console.log('📡 SendPulse init callback received:', token)
-                
-                if (token && token.is_error) {
-                  console.error('❌ SendPulse authentication failed:', JSON.stringify(token))
-                  resolve() // Don't block signup
-                  return
-                }
-
-                if (!token) {
-                  console.error('❌ SendPulse: No token received')
-                  resolve()
-                  return
-                }
-
-                console.log('✅ SendPulse authenticated successfully')
-
-                const emailData = {
-                  "html": this.getVerificationEmailTemplate(name, code),
-                  "text": `Hi ${name},\n\nYour verification code is: ${code}\n\nThis code will expire in 10 minutes.\n\nBest regards,\nThe Salvebot Team`,
-                  "subject": "Verify your email address - Salvebot",
-                  "from": {
-                    "name": "Salvebot Support",
-                    "email": "support@salvebot.com"
-                  },
-                  "to": [
-                    {
-                      "name": name,
-                      "email": email
-                    }
-                  ]
-                }
-
-                console.log('📤 Sending email via SendPulse SMTP...')
-                sendpulse.smtpSendMail((data: any) => {
-                  console.log('📧 SendPulse SMTP response:', JSON.stringify(data))
-                  
-                  if (data && (data.result === true || data.success === true)) {
-                    console.log('✅ Verification email sent successfully via SendPulse')
-                  } else {
-                    console.error('❌ SendPulse send failed:', JSON.stringify(data))
+          // Get access token
+          const token = await this.getSendPulseToken()
+          if (!token) {
+            console.log('⚠️  Failed to get SendPulse token, using console logging fallback')
+          } else {
+            // Prepare email data for SendPulse API
+            const emailData = {
+              "email": {
+                "html": this.getVerificationEmailTemplate(name, code),
+                "text": `Hi ${name},\n\nYour verification code is: ${code}\n\nThis code will expire in 10 minutes.\n\nBest regards,\nThe Salvebot Team`,
+                "subject": "Verify your email address - Salvebot",
+                "from": {
+                  "name": "Salvebot Support",
+                  "email": "support@salvebot.com"
+                },
+                "to": [
+                  {
+                    "name": name,
+                    "email": email
                   }
-                  resolve()
-                }, emailData)
-              })
-            } catch (initError) {
-              console.error('❌ SendPulse init error:', initError)
-              resolve()
+                ]
+              }
             }
-          })
+
+            console.log('📤 Sending verification email via SendPulse API...')
+            const emailSent = await this.sendPulseEmail(token, emailData)
+            
+            if (emailSent) {
+              console.log('✅ Verification email sent successfully via SendPulse')
+            } else {
+              console.log('⚠️  SendPulse email send failed, verification code available in logs')
+            }
+          }
         } else {
           console.log('⚠️  SendPulse credentials missing - check SENDPULSE_USER_ID and SENDPULSE_SECRET secrets')
         }
