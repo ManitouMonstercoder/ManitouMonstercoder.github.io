@@ -122,10 +122,12 @@ authRouter.post('/signup', zValidator('json', signupSchema), async (c) => {
       requiresVerification: true
     }, 201)
   } catch (error) {
-    console.error('Signup error:', error)
+    console.error('Signup error details:', error)
+    console.error('Error message:', error.message)
+    console.error('Error stack:', error.stack)
     return c.json({ 
       success: false,
-      message: 'Failed to create account' 
+      message: 'Failed to create account'
     }, 500)
   }
 })
