@@ -33,6 +33,7 @@ export interface User {
   name: string
   company?: string
   hashedPassword: string
+  passwordHistory?: string[] // Store hashed previous passwords for security
   createdAt: string
   updatedAt: string
   lastLoginAt?: string
@@ -44,6 +45,9 @@ export interface User {
   loginCount?: number
   isEmailVerified?: boolean
   emailVerifiedAt?: string
+  failedLoginAttempts?: number
+  lastFailedLogin?: string
+  accountLockedUntil?: string
 }
 
 export interface Chatbot {

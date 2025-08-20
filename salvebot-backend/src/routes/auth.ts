@@ -10,10 +10,25 @@ import { generateId, validateEmail, jsonResponse, errorResponse } from '../lib/u
 
 const authRouter = new Hono<{ Bindings: Env }>()
 
+// Strong password validation regex
+const strongPasswordSchema = z.string()
+  .min(12, "Password must be at least 12 characters long")
+  .regex(/^(?=.*[a-z])/, "Password must contain at least one lowercase letter")
+  .regex(/^(?=.*[A-Z])/, "Password must contain at least one uppercase letter")
+  .regex(/^(?=.*\d)/, "Password must contain at least one number")
+  .regex(/^(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?])/, "Password must contain at least one special character")
+  .regex(/^[^\s]*$/, "Password cannot contain spaces")
+
+// Full name validation - requires at least first and last name
+const fullNameSchema = z.string()
+  .min(3, "Full name must be at least 3 characters")
+  .max(100, "Full name cannot exceed 100 characters")
+  .regex(/^[a-zA-Z]+(\s+[a-zA-Z]+)+$/, "Please enter your full name (first and last name required)")
+
 const signupSchema = z.object({
-  name: z.string().min(2).max(100),
+  name: fullNameSchema,
   email: z.string().email(),
-  password: z.string().min(8),
+  password: strongPasswordSchema,
   company: z.string().optional()
 })
 
@@ -33,7 +48,7 @@ const passwordResetRequestSchema = z.object({
 
 const passwordResetSchema = z.object({
   token: z.string(),
-  newPassword: z.string().min(8)
+  newPassword: strongPasswordSchema
 })
 
 const resendVerificationSchema = z.object({
@@ -275,10 +290,45 @@ authRouter.post('/signin', zValidator('json', signinSchema), async (c) => {
 
     const user: User = JSON.parse(userData)
     
+    // Check if account is locked
+    if (user.accountLockedUntil) {
+      const lockExpiry = new Date(user.accountLockedUntil)
+      if (new Date() < lockExpiry) {
+        const minutesLeft = Math.ceil((lockExpiry.getTime() - Date.now()) / (1000 * 60))
+        return c.json({
+          success: false,
+          message: `Account temporarily locked due to multiple failed login attempts. Please try again in ${minutesLeft} minutes or reset your password.`
+        }, 429)
+      } else {
+        // Lock expired, reset failed attempts
+        user.accountLockedUntil = undefined
+        user.failedLoginAttempts = 0
+      }
+    }
+    
     // Verify password
     const isValidPassword = await authService.verifyPassword(password, user.hashedPassword)
     if (!isValidPassword) {
-      return errorResponse('Invalid credentials', 401)
+      // Increment failed login attempts
+      const failedAttempts = (user.failedLoginAttempts || 0) + 1
+      user.failedLoginAttempts = failedAttempts
+      user.lastFailedLogin = new Date().toISOString()
+      
+      // Lock account after 5 failed attempts for 30 minutes
+      if (failedAttempts >= 5) {
+        user.accountLockedUntil = new Date(Date.now() + 30 * 60 * 1000).toISOString() // 30 minutes
+        await c.env.USERS.put(email, JSON.stringify(user))
+        return c.json({
+          success: false,
+          message: 'Account locked due to multiple failed login attempts. Please try again in 30 minutes or reset your password.'
+        }, 429)
+      }
+      
+      await c.env.USERS.put(email, JSON.stringify(user))
+      return c.json({
+        success: false,
+        message: `Invalid credentials. ${5 - failedAttempts} attempts remaining before account lockout.`
+      }, 401)
     }
 
     // SECURITY: Check if email is verified before allowing login
@@ -291,12 +341,15 @@ authRouter.post('/signin', zValidator('json', signinSchema), async (c) => {
       }, 403)
     }
 
-    // Update user login tracking
+    // Update user login tracking and reset security fields
     const now = new Date().toISOString()
     user.lastLoginAt = now
     user.updatedAt = now
     user.loginCount = (user.loginCount || 0) + 1
     user.isNewUser = false // Mark as returning user after first login
+    user.failedLoginAttempts = 0 // Reset failed attempts on successful login
+    user.lastFailedLogin = undefined
+    user.accountLockedUntil = undefined
     
     // Save updated user
     await c.env.USERS.put(email, JSON.stringify(user))
@@ -430,14 +483,48 @@ authRouter.post('/reset-password', zValidator('json', passwordResetSchema), asyn
 
     const user: User = JSON.parse(userData)
     
-    // Hash new password
+    // Check if new password is same as current password
     const authService = new AuthService(c.env.JWT_SECRET)
+    const isSamePassword = await authService.verifyPassword(newPassword, user.hashedPassword)
+    
+    if (isSamePassword) {
+      return c.json({
+        success: false,
+        message: 'New password cannot be the same as your current password. Please choose a different password.'
+      }, 400)
+    }
+
+    // Check against password history (last 5 passwords)
+    if (user.passwordHistory && user.passwordHistory.length > 0) {
+      for (const oldPassword of user.passwordHistory) {
+        const isOldPassword = await authService.verifyPassword(newPassword, oldPassword)
+        if (isOldPassword) {
+          return c.json({
+            success: false,
+            message: 'You cannot reuse a previous password. Please choose a new password you have not used before.'
+          }, 400)
+        }
+      }
+    }
+
+    // Hash new password
     const hashedPassword = await authService.hashPassword(newPassword)
     
-    // Update user with new password
+    // Update password history (keep last 5 passwords)
+    const passwordHistory = user.passwordHistory || []
+    passwordHistory.unshift(user.hashedPassword) // Add current password to history
+    if (passwordHistory.length > 5) {
+      passwordHistory.pop() // Keep only last 5 passwords
+    }
+    
+    // Update user with new password and reset security fields
     const now = new Date().toISOString()
     user.hashedPassword = hashedPassword
+    user.passwordHistory = passwordHistory
     user.updatedAt = now
+    user.failedLoginAttempts = 0 // Reset failed attempts
+    user.lastFailedLogin = undefined
+    user.accountLockedUntil = undefined
 
     // Save updated user
     await c.env.USERS.put(email, JSON.stringify(user))

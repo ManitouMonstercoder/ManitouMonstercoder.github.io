@@ -18,6 +18,49 @@ export default function SignUpPage() {
     company: '',
     terms: false
   })
+  const [passwordValidation, setPasswordValidation] = useState({
+    length: false,
+    uppercase: false,
+    lowercase: false,
+    number: false,
+    special: false,
+    noSpaces: false
+  })
+  const [nameValidation, setNameValidation] = useState({
+    isValid: false,
+    message: ''
+  })
+
+  const validatePassword = (password: string) => {
+    setPasswordValidation({
+      length: password.length >= 12,
+      uppercase: /[A-Z]/.test(password),
+      lowercase: /[a-z]/.test(password),
+      number: /\d/.test(password),
+      special: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password),
+      noSpaces: !/\s/.test(password)
+    })
+  }
+
+  const validateName = (name: string) => {
+    const trimmedName = name.trim()
+    if (trimmedName.length < 3) {
+      setNameValidation({
+        isValid: false,
+        message: 'Full name must be at least 3 characters'
+      })
+    } else if (!/^[a-zA-Z]+(\s+[a-zA-Z]+)+$/.test(trimmedName)) {
+      setNameValidation({
+        isValid: false,
+        message: 'Please enter your full name (first and last name required)'
+      })
+    } else {
+      setNameValidation({
+        isValid: true,
+        message: ''
+      })
+    }
+  }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target
@@ -25,12 +68,33 @@ export default function SignUpPage() {
       ...prev,
       [name]: type === 'checkbox' ? checked : value
     }))
+
+    // Real-time validation
+    if (name === 'password') {
+      validatePassword(value)
+    } else if (name === 'name') {
+      validateName(value)
+    }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
     setError('')
+
+    // Validate form before submission
+    if (!nameValidation.isValid) {
+      setError(nameValidation.message || 'Please enter a valid full name')
+      setIsLoading(false)
+      return
+    }
+
+    const isPasswordValid = Object.values(passwordValidation).every(valid => valid)
+    if (!isPasswordValid) {
+      setError('Password does not meet security requirements')
+      setIsLoading(false)
+      return
+    }
 
     if (!formData.terms) {
       setError('Please agree to the Terms of Service and Privacy Policy')
@@ -103,14 +167,22 @@ export default function SignUpPage() {
                 required
                 value={formData.name}
                 onChange={handleInputChange}
-                className="form-input"
+                className={`form-input ${formData.name && !nameValidation.isValid ? 'border-destructive' : formData.name && nameValidation.isValid ? 'border-green-500' : ''}`}
                 placeholder="Enter your real first and last name"
-                minLength={2}
-                maxLength={50}
+                minLength={3}
+                maxLength={100}
               />
-              <p className="text-xs text-muted-foreground">
-                Please enter your real first and last name as it appears on official documents
-              </p>
+              {formData.name && !nameValidation.isValid && (
+                <p className="text-xs text-destructive">{nameValidation.message}</p>
+              )}
+              {formData.name && nameValidation.isValid && (
+                <p className="text-xs text-green-600">✓ Full name is valid</p>
+              )}
+              {!formData.name && (
+                <p className="text-xs text-muted-foreground">
+                  Please enter your real first and last name (e.g., "John Smith")
+                </p>
+              )}
             </div>
             
             <div className="space-y-2">
@@ -145,12 +217,42 @@ export default function SignUpPage() {
                 onChange={handleInputChange}
                 className="form-input"
                 placeholder="Create a strong password"
-                minLength={8}
+                minLength={12}
                 maxLength={128}
               />
-              <p className="text-xs text-muted-foreground">
-                Must contain at least 8 characters with uppercase, lowercase, number, and special character
-              </p>
+              {formData.password && (
+                <div className="space-y-1 text-xs">
+                  <div className={`flex items-center ${passwordValidation.length ? 'text-green-600' : 'text-muted-foreground'}`}>
+                    <span className="mr-2">{passwordValidation.length ? '✓' : '○'}</span>
+                    At least 12 characters
+                  </div>
+                  <div className={`flex items-center ${passwordValidation.uppercase ? 'text-green-600' : 'text-muted-foreground'}`}>
+                    <span className="mr-2">{passwordValidation.uppercase ? '✓' : '○'}</span>
+                    One uppercase letter (A-Z)
+                  </div>
+                  <div className={`flex items-center ${passwordValidation.lowercase ? 'text-green-600' : 'text-muted-foreground'}`}>
+                    <span className="mr-2">{passwordValidation.lowercase ? '✓' : '○'}</span>
+                    One lowercase letter (a-z)
+                  </div>
+                  <div className={`flex items-center ${passwordValidation.number ? 'text-green-600' : 'text-muted-foreground'}`}>
+                    <span className="mr-2">{passwordValidation.number ? '✓' : '○'}</span>
+                    One number (0-9)
+                  </div>
+                  <div className={`flex items-center ${passwordValidation.special ? 'text-green-600' : 'text-muted-foreground'}`}>
+                    <span className="mr-2">{passwordValidation.special ? '✓' : '○'}</span>
+                    One special character (!@#$%^&*...)
+                  </div>
+                  <div className={`flex items-center ${passwordValidation.noSpaces ? 'text-green-600' : 'text-destructive'}`}>
+                    <span className="mr-2">{passwordValidation.noSpaces ? '✓' : '✗'}</span>
+                    No spaces allowed
+                  </div>
+                </div>
+              )}
+              {!formData.password && (
+                <p className="text-xs text-muted-foreground">
+                  Create a strong password with at least 12 characters including uppercase, lowercase, numbers, and special characters
+                </p>
+              )}
             </div>
             
             <div className="space-y-2">
