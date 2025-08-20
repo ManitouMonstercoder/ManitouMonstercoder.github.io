@@ -62,7 +62,13 @@ class ApiClient {
       const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.message || `HTTP error! status: ${response.status}`)
+        // Handle validation errors from Zod
+        if (data.error && data.error.issues) {
+          const validationErrors = data.error.issues.map((issue: any) => issue.message).join('; ')
+          throw new Error(validationErrors)
+        }
+        // Handle other error formats
+        throw new Error(data.message || data.error || `HTTP error! status: ${response.status}`)
       }
 
       return data

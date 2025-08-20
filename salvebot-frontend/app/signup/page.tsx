@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { BotIcon } from '@/components/icons'
 import { api, authUtils } from '@/lib/api'
@@ -30,6 +30,44 @@ export default function SignUpPage() {
     isValid: false,
     message: ''
   })
+  
+  // Refs for smart scrolling
+  const errorRef = useRef<HTMLDivElement>(null)
+  const nameRef = useRef<HTMLInputElement>(null)
+  const passwordRef = useRef<HTMLInputElement>(null)
+  const emailRef = useRef<HTMLInputElement>(null)
+
+  // Smart scroll to first error/validation issue
+  const scrollToFirstError = () => {
+    setTimeout(() => {
+      if (error && errorRef.current) {
+        errorRef.current.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'center' 
+        })
+        return
+      }
+      
+      if (!nameValidation.isValid && formData.name && nameRef.current) {
+        nameRef.current.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'center' 
+        })
+        nameRef.current.focus()
+        return
+      }
+      
+      const isPasswordValid = Object.values(passwordValidation).every(valid => valid)
+      if (!isPasswordValid && formData.password && passwordRef.current) {
+        passwordRef.current.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'center' 
+        })
+        passwordRef.current.focus()
+        return
+      }
+    }, 100)
+  }
 
   const validatePassword = (password: string) => {
     setPasswordValidation({
@@ -84,15 +122,23 @@ export default function SignUpPage() {
 
     // Validate form before submission
     if (!nameValidation.isValid) {
-      setError(nameValidation.message || 'Please enter a valid full name')
+      setError('👤 ' + (nameValidation.message || 'Please enter a valid full name'))
       setIsLoading(false)
+      setTimeout(() => {
+        nameRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        nameRef.current?.focus()
+      }, 100)
       return
     }
 
     const isPasswordValid = Object.values(passwordValidation).every(valid => valid)
     if (!isPasswordValid) {
-      setError('Password does not meet security requirements')
+      setError('🔒 Password does not meet security requirements. Please check the requirements below.')
       setIsLoading(false)
+      setTimeout(() => {
+        passwordRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        passwordRef.current?.focus()
+      }, 100)
       return
     }
 
@@ -121,11 +167,50 @@ export default function SignUpPage() {
         setError(response.message || 'Failed to create account')
       }
     } catch (err: any) {
-      setError(err.message || 'An error occurred during signup')
+      let errorMessage = err.message || 'An error occurred during signup'
+      
+      // Provide more helpful error messages
+      if (errorMessage.includes('Full name must be at least 3 characters')) {
+        errorMessage = '👤 Please enter your complete first and last name (minimum 3 characters)'
+      } else if (errorMessage.includes('Please enter your full name')) {
+        errorMessage = '👤 Please enter both your first and last name (e.g., "John Smith")'
+      } else if (errorMessage.includes('Password must be at least 12 characters')) {
+        errorMessage = '🔒 Your password is too short. Please create a password with at least 12 characters'
+      } else if (errorMessage.includes('Password must contain')) {
+        errorMessage = '🔒 Password requirements not met. Please check the requirements below the password field'
+      } else if (errorMessage.includes('email already has an account')) {
+        errorMessage = '📧 This email is already registered. Please sign in instead or use a different email'
+      } else if (errorMessage.includes('HTTP error! status: 400')) {
+        errorMessage = '⚠️ Please check all fields and ensure they meet the requirements shown'
+      }
+      
+      setError(errorMessage)
+      scrollToFirstError()
     } finally {
       setIsLoading(false)
     }
   }
+
+  // Scroll to error when validation fails
+  useEffect(() => {
+    if (error) {
+      scrollToFirstError()
+    }
+  }, [error])
+
+  // Scroll to validation issues when they occur
+  useEffect(() => {
+    if (formData.name && !nameValidation.isValid) {
+      // Only scroll if user has attempted to fill the field
+    }
+  }, [nameValidation.isValid, formData.name])
+
+  useEffect(() => {
+    const isPasswordValid = Object.values(passwordValidation).every(valid => valid)
+    if (formData.password && !isPasswordValid) {
+      // Only scroll if user has attempted to fill the field
+    }
+  }, [passwordValidation, formData.password])
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-muted/30 py-12">
@@ -145,7 +230,10 @@ export default function SignUpPage() {
           </div>
         
           {error && (
-            <div className="bg-destructive/10 border border-destructive/20 text-destructive px-6 py-4 rounded-xl mb-8 animate-fade-in">
+            <div 
+              ref={errorRef}
+              className="bg-destructive/10 border border-destructive/20 text-destructive px-6 py-4 rounded-xl mb-8 animate-fade-in scroll-mt-4"
+            >
               <div className="flex items-center">
                 <div className="w-5 h-5 bg-destructive/20 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
                   <span className="text-destructive text-xs">!</span>
@@ -161,13 +249,14 @@ export default function SignUpPage() {
                 Full name *
               </label>
               <input
+                ref={nameRef}
                 id="name"
                 name="name"
                 type="text"
                 required
                 value={formData.name}
                 onChange={handleInputChange}
-                className={`form-input ${formData.name && !nameValidation.isValid ? 'border-destructive' : formData.name && nameValidation.isValid ? 'border-green-500' : ''}`}
+                className={`form-input scroll-mt-4 ${formData.name && !nameValidation.isValid ? 'border-destructive focus:border-destructive focus:ring-destructive/20' : formData.name && nameValidation.isValid ? 'border-green-500 focus:border-green-500 focus:ring-green-500/20' : ''}`}
                 placeholder="Enter your real first and last name"
                 minLength={3}
                 maxLength={100}
@@ -190,13 +279,14 @@ export default function SignUpPage() {
                 Business email address *
               </label>
               <input
+                ref={emailRef}
                 id="email"
                 name="email"
                 type="email"
                 required
                 value={formData.email}
                 onChange={handleInputChange}
-                className="form-input"
+                className="form-input scroll-mt-4"
                 placeholder="Enter your professional email address"
               />
               <p className="text-xs text-muted-foreground">
@@ -209,13 +299,14 @@ export default function SignUpPage() {
                 Password *
               </label>
               <input
+                ref={passwordRef}
                 id="password"
                 name="password"
                 type="password"
                 required
                 value={formData.password}
                 onChange={handleInputChange}
-                className="form-input"
+                className="form-input scroll-mt-4"
                 placeholder="Create a strong password"
                 minLength={12}
                 maxLength={128}
@@ -295,9 +386,14 @@ export default function SignUpPage() {
             <Button 
               type="submit" 
               className="w-full btn-hover py-4 text-base font-medium shadow-lg" 
-              disabled={isLoading}
+              disabled={isLoading || !nameValidation.isValid || !Object.values(passwordValidation).every(v => v) || !formData.email || !formData.terms}
             >
-              {isLoading ? 'Creating Account...' : 'Create Account'}
+              {isLoading 
+                ? 'Creating Account...' 
+                : (!nameValidation.isValid || !Object.values(passwordValidation).every(v => v) || !formData.email || !formData.terms)
+                  ? 'Complete Required Fields'
+                  : 'Create Account'
+              }
             </Button>
           </form>
           
