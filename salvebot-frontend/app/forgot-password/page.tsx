@@ -2,21 +2,27 @@
 
 import Link from 'next/link'
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { BotIcon } from '@/components/icons'
 import { api } from '@/lib/api'
 
 export default function ForgotPasswordPage() {
+  const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
   const [email, setEmail] = useState('')
+  const [showSignupButton, setShowSignupButton] = useState(false)
+  const [showContactSupport, setShowContactSupport] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
     setError('')
     setSuccess('')
+    setShowSignupButton(false)
+    setShowContactSupport(false)
 
     if (!email) {
       setError('Please enter your email address')
@@ -28,7 +34,18 @@ export default function ForgotPasswordPage() {
       const response = await api.requestPasswordReset(email)
       setSuccess(response.message || 'Password reset link sent to your email')
     } catch (err: any) {
-      setError(err.message || 'An error occurred')
+      const errorMessage = err.message || 'An error occurred'
+      setError(errorMessage)
+      
+      // Check if user needs to sign up
+      if (errorMessage.includes('No account found') || errorMessage.includes('Please create a free account')) {
+        setShowSignupButton(true)
+      }
+      
+      // Check if user needs to contact support
+      if (errorMessage.includes('contact support') || errorMessage.includes('Too many')) {
+        setShowContactSupport(true)
+      }
     } finally {
       setIsLoading(false)
     }
@@ -98,6 +115,29 @@ export default function ForgotPasswordPage() {
               {isLoading ? 'Sending...' : 'Send Reset Link'}
             </Button>
           </form>
+
+          {showSignupButton && (
+            <div className="mt-4">
+              <Link href="/signup">
+                <Button 
+                  className="w-full btn-hover py-4 text-base font-medium bg-green-600 hover:bg-green-700" 
+                >
+                  Create Free Account
+                </Button>
+              </Link>
+            </div>
+          )}
+
+          {showContactSupport && (
+            <div className="mt-4">
+              <Button 
+                onClick={() => window.open('mailto:support@salvebot.com?subject=Password Reset Support Request', '_blank')}
+                className="w-full btn-hover py-4 text-base font-medium bg-orange-600 hover:bg-orange-700" 
+              >
+                Contact Support
+              </Button>
+            </div>
+          )}
           
           <div className="text-center pt-6 border-t border-border/50">
             <p className="text-muted-foreground">

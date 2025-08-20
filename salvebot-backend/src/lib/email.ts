@@ -399,14 +399,7 @@ export class EmailService {
             <div class="header">
                 <div class="logo-container">
                     <div class="logo-icon">
-                        <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: white;">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8V4H8" />
-                            <rect width="16" height="12" x="4" y="8" rx="2" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2 14h2" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 14h2" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13v2" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13v2" />
-                        </svg>
+                        <div style="font-size: 24px; color: white; font-weight: bold;">🤖</div>
                     </div>
                     <div class="logo-text">Salvebot</div>
                 </div>
@@ -574,14 +567,7 @@ export class EmailService {
             <div class="header">
                 <div class="logo-container">
                     <div class="logo-icon">
-                        <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: white;">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8V4H8" />
-                            <rect width="16" height="12" x="4" y="8" rx="2" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2 14h2" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 14h2" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13v2" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13v2" />
-                        </svg>
+                        <div style="font-size: 24px; color: white; font-weight: bold;">🔐</div>
                     </div>
                     <div class="logo-text">Salvebot</div>
                 </div>

@@ -425,34 +425,73 @@ authRouter.post('/request-password-reset', zValidator('json', passwordResetReque
   const { email } = c.req.valid('json')
   
   try {
-    // Check if user exists (but don't reveal this information in response)
+    // Check if user exists
     const userData = await c.env.USERS.get(email)
     
-    if (userData) {
-      const user: User = JSON.parse(userData)
-      
-      // Generate secure reset token
-      const resetToken = crypto.randomUUID()
-      
-      // Store reset token
-      const emailService = new EmailService(c.env)
-      await emailService.storePasswordResetTokenWithLookup(email, resetToken)
-      
-      // Send reset email
-      await emailService.sendPasswordResetEmail(email, resetToken, user.name)
+    if (!userData) {
+      // User doesn't exist - redirect to signup instead of hiding this info
+      return c.json({
+        success: false,
+        message: 'No account found with this email address. Please create a free account to get started.',
+        requiresSignup: true
+      }, 404)
+    }
+
+    const user: User = JSON.parse(userData)
+
+    // Check rate limiting - max 2 password reset attempts per hour
+    const rateLimitKey = `password_reset_${email}`
+    const existingAttempts = await c.env.VERIFY_KV.get(rateLimitKey)
+    
+    if (existingAttempts) {
+      const attempts = JSON.parse(existingAttempts)
+      if (attempts.count >= 2) {
+        const timeLeft = Math.ceil((new Date(attempts.expires).getTime() - Date.now()) / (1000 * 60))
+        return c.json({
+          success: false,
+          message: `Too many password reset attempts. Please contact support or try again in ${timeLeft} minutes.`,
+          contactSupport: true
+        }, 429)
+      }
+      // Increment attempt count
+      attempts.count += 1
+      await c.env.VERIFY_KV.put(rateLimitKey, JSON.stringify(attempts), { expirationTtl: 3600 })
+    } else {
+      // First attempt
+      const rateLimit = {
+        count: 1,
+        expires: new Date(Date.now() + 3600000).toISOString() // 1 hour
+      }
+      await c.env.VERIFY_KV.put(rateLimitKey, JSON.stringify(rateLimit), { expirationTtl: 3600 })
     }
     
-    // Always return the same response for security (don't reveal if email exists)
+    // Generate secure reset token
+    const resetToken = crypto.randomUUID()
+    
+    // Store reset token
+    const emailService = new EmailService(c.env)
+    await emailService.storePasswordResetTokenWithLookup(email, resetToken)
+    
+    // Send reset email
+    const emailSent = await emailService.sendPasswordResetEmail(email, resetToken, user.name)
+    
+    if (!emailSent) {
+      return c.json({
+        success: false,
+        message: 'Failed to send password reset email. Please try again later.'
+      }, 500)
+    }
+    
     return c.json({
       success: true,
-      message: 'If an account with that email exists, a password reset link has been sent.'
+      message: 'Password reset link sent to your email address. Please check your inbox.'
     })
   } catch (error) {
     console.error('Password reset request error:', error)
     return c.json({
-      success: true,
-      message: 'If an account with that email exists, a password reset link has been sent.'
-    })
+      success: false,
+      message: 'Failed to process password reset request. Please try again.'
+    }, 500)
   }
 })
 
