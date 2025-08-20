@@ -110,13 +110,60 @@
     @apply transition-all duration-200 ease-in-out;
   }
   
-  /* Card shadows */
+  /* Enhanced Card shadows for dark theme */
   .card-shadow {
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
   }
   
   .card-shadow-lg {
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  }
+  
+  .card-shadow-xl {
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  }
+  
+  /* Dark theme enhanced shadows */
+  .dark .card-shadow {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
+  }
+  
+  .dark .card-shadow-lg {
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 0 rgba(255, 255, 255, 0.08);
+  }
+  
+  .dark .card-shadow-xl {
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 25px 25px -5px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
+  }
+  
+  /* Button shadows */
+  .btn-shadow {
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+  }
+  
+  .dark .btn-shadow {
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.3), inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
+  }
+  
+  /* Input shadows */
+  .input-shadow {
+    box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+  }
+  
+  .dark .input-shadow {
+    box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.4), inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
+  }
+  
+  /* Focus shadows */
+  .focus-shadow {
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+  }
+  
+  .dark .focus-shadow {
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25), 0 0 20px 0 rgba(59, 130, 246, 0.1);
   }
 }
 
@@ -143,7 +190,11 @@
   .form-input {
     @apply w-full px-4 py-3 border border-input bg-background rounded-lg text-sm 
            focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent
-           placeholder:text-muted-foreground transition-colors;
+           placeholder:text-muted-foreground transition-colors input-shadow;
+  }
+  
+  .form-input:focus {
+    @apply focus-shadow;
   }
   
   .form-label {

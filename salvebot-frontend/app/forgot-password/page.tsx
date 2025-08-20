@@ -109,7 +109,7 @@ export default function ForgotPasswordPage() {
             
             <Button 
               type="submit" 
-              className="w-full btn-hover py-4 text-base font-medium shadow-lg" 
+              className="w-full btn-hover btn-shadow py-4 text-base font-medium shadow-lg" 
               disabled={isLoading}
             >
               {isLoading ? 'Sending...' : 'Send Reset Link'}
@@ -120,7 +120,7 @@ export default function ForgotPasswordPage() {
             <div className="mt-4">
               <Link href="/signup">
                 <Button 
-                  className="w-full btn-hover py-4 text-base font-medium bg-green-600 hover:bg-green-700" 
+                  className="w-full btn-hover btn-shadow py-4 text-base font-medium bg-green-600 hover:bg-green-700" 
                 >
                   Create Free Account
                 </Button>
@@ -132,7 +132,7 @@ export default function ForgotPasswordPage() {
             <div className="mt-4">
               <Button 
                 onClick={() => window.open('mailto:support@salvebot.com?subject=Password Reset Support Request', '_blank')}
-                className="w-full btn-hover py-4 text-base font-medium bg-orange-600 hover:bg-orange-700" 
+                className="w-full btn-hover btn-shadow py-4 text-base font-medium bg-orange-600 hover:bg-orange-700" 
               >
                 Contact Support
               </Button>

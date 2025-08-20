@@ -129,14 +129,14 @@ export default function SignInPage() {
                 </div>
                 {requiresSignup && (
                   <Link href="/signup">
-                    <Button size="sm" className="ml-4">
+                    <Button size="sm" className="ml-4 btn-shadow">
                       Create Account
                     </Button>
                   </Link>
                 )}
                 {requiresVerification && (
                   <Link href={`/verify-email?email=${encodeURIComponent(userEmail)}`}>
-                    <Button size="sm" className="ml-4">
+                    <Button size="sm" className="ml-4 btn-shadow">
                       Verify Email
                     </Button>
                   </Link>
@@ -200,7 +200,7 @@ export default function SignInPage() {
             
             <Button 
               type="submit" 
-              className="w-full btn-hover py-4 text-base font-medium shadow-lg" 
+              className="w-full btn-hover btn-shadow py-4 text-base font-medium shadow-lg" 
               disabled={isLoading}
             >
               {isLoading ? 'Signing in...' : 'Sign in'}

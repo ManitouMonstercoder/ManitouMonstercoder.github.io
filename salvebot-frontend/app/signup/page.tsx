@@ -385,7 +385,7 @@ export default function SignUpPage() {
             
             <Button 
               type="submit" 
-              className="w-full btn-hover py-4 text-base font-medium shadow-lg" 
+              className="w-full btn-hover btn-shadow py-4 text-base font-medium shadow-lg" 
               disabled={isLoading || !nameValidation.isValid || !Object.values(passwordValidation).every(v => v) || !formData.email || !formData.terms}
             >
               {isLoading 

@@ -48,7 +48,7 @@ export default function HomePage() {
               </Button>
             </Link>
             <Link href="/signup">
-              <Button size="sm" className="btn-hover shadow-lg flex items-center space-x-2">
+              <Button size="sm" className="btn-hover btn-shadow shadow-lg flex items-center space-x-2">
                 <span>Get Started</span>
                 <ArrowRightIcon className="h-4 w-4" />
               </Button>
@@ -84,13 +84,13 @@ export default function HomePage() {
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center animate-fade-in">
             <Link href="/signup">
-              <Button size="lg" className="btn-hover shadow-lg px-8 py-4 text-base flex items-center space-x-2">
+              <Button size="lg" className="btn-hover btn-shadow shadow-lg px-8 py-4 text-base flex items-center space-x-2">
                 <span>Start Free Trial</span>
                 <ArrowRightIcon className="h-5 w-5" />
               </Button>
             </Link>
             <Link href="/demo">
-              <Button size="lg" variant="outline" className="btn-hover px-8 py-4 text-base">
+              <Button size="lg" variant="outline" className="btn-hover btn-shadow px-8 py-4 text-base">
                 View Demo
               </Button>
             </Link>
@@ -116,7 +116,7 @@ export default function HomePage() {
           </div>
           
           <div className="grid md:grid-cols-3 gap-8 lg:gap-12">
-            <div className="group text-center p-8 rounded-2xl border border-border/50 hover:border-primary/20 hover:shadow-lg transition-all duration-300 bg-card/50">
+            <div className="group text-center p-8 rounded-2xl border border-border/50 hover:border-primary/20 card-shadow hover:card-shadow-lg transition-all duration-300 bg-card/50">
               <div className="w-20 h-20 bg-gradient-to-br from-primary/10 to-brand/10 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
                 <BotIcon className="h-10 w-10 text-primary" />
               </div>
@@ -126,7 +126,7 @@ export default function HomePage() {
               </p>
             </div>
             
-            <div className="group text-center p-8 rounded-2xl border border-border/50 hover:border-primary/20 hover:shadow-lg transition-all duration-300 bg-card/50">
+            <div className="group text-center p-8 rounded-2xl border border-border/50 hover:border-primary/20 card-shadow hover:card-shadow-lg transition-all duration-300 bg-card/50">
               <div className="w-20 h-20 bg-gradient-to-br from-primary/10 to-brand/10 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
                 <ShieldIcon className="h-10 w-10 text-primary" />
               </div>
@@ -136,7 +136,7 @@ export default function HomePage() {
               </p>
             </div>
             
-            <div className="group text-center p-8 rounded-2xl border border-border/50 hover:border-primary/20 hover:shadow-lg transition-all duration-300 bg-card/50">
+            <div className="group text-center p-8 rounded-2xl border border-border/50 hover:border-primary/20 card-shadow hover:card-shadow-lg transition-all duration-300 bg-card/50">
               <div className="w-20 h-20 bg-gradient-to-br from-primary/10 to-brand/10 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
                 <ZapIcon className="h-10 w-10 text-primary" />
               </div>
@@ -163,7 +163,7 @@ export default function HomePage() {
           </div>
           
           <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-            <div className="bg-card p-10 rounded-3xl border border-border/50 card-shadow hover:shadow-lg transition-all duration-300">
+            <div className="bg-card p-10 rounded-3xl border border-border/50 card-shadow-lg hover:card-shadow-xl transition-all duration-300">
               <div className="mb-8">
                 <h3 className="text-3xl font-bold mb-2">Starter</h3>
                 <p className="text-muted-foreground mb-6">Perfect for small businesses and startups</p>
@@ -197,13 +197,13 @@ export default function HomePage() {
               </ul>
               
               <Link href="/signup?plan=starter">
-                <Button className="w-full btn-hover py-4 text-base">
+                <Button className="w-full btn-hover btn-shadow py-4 text-base">
                   Get Started
                 </Button>
               </Link>
             </div>
             
-            <div className="bg-card p-10 rounded-3xl border-2 border-primary card-shadow-lg hover:shadow-xl transition-all duration-300 relative">
+            <div className="bg-card p-10 rounded-3xl border-2 border-primary card-shadow-xl hover:card-shadow-xl transition-all duration-300 relative">
               <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
                 <div className="bg-gradient-to-r from-primary to-brand text-white px-6 py-2 rounded-full text-sm font-semibold shadow-lg">
                   Most Popular
@@ -247,7 +247,7 @@ export default function HomePage() {
               </ul>
               
               <Link href="/signup?plan=pro">
-                <Button className="w-full btn-hover py-4 text-base bg-gradient-to-r from-primary to-brand hover:from-primary/90 hover:to-brand/90">
+                <Button className="w-full btn-hover btn-shadow py-4 text-base bg-gradient-to-r from-primary to-brand hover:from-primary/90 hover:to-brand/90">
                   Get Started
                 </Button>
               </Link>
