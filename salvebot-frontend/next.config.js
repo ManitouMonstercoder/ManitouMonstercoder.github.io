@@ -16,6 +16,33 @@ const nextConfig = {
   experimental: {
     missingSuspenseWithCSRBailout: false,
   },
+  compiler: {
+    // Remove console.logs in production
+    removeConsole: process.env.NODE_ENV === 'production',
+  },
+  // Configure webpack for better JavaScript output
+  webpack: (config, { isServer }) => {
+    if (!isServer) {
+      // Ensure proper semicolon insertion in client-side builds
+      config.optimization.minimizer.forEach((minimizer) => {
+        if (minimizer.constructor.name === 'TerserPlugin') {
+          minimizer.options.terserOptions = {
+            ...minimizer.options.terserOptions,
+            output: {
+              ...minimizer.options.terserOptions?.output,
+              semicolons: true,
+              beautify: false,
+            },
+            compress: {
+              ...minimizer.options.terserOptions?.compress,
+              sequences: true,
+            },
+          }
+        }
+      })
+    }
+    return config
+  },
 }
 
 module.exports = nextConfig
