@@ -25,6 +25,8 @@ export interface Env {
   STRIPE_SECRET_KEY: string
   STRIPE_WEBHOOK_SECRET: string
   OPENAI_API_KEY: string
+  SENDPULSE_USER_ID: string
+  SENDPULSE_SECRET: string
 }
 
 export interface User {

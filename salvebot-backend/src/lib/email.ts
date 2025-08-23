@@ -6,6 +6,22 @@ interface SendPulseTokenResponse {
   expires_in: number
 }
 
+interface SendPulseEmailData {
+  email: {
+    html: string
+    text?: string  // Make text optional to prioritize HTML
+    subject: string
+    from: {
+      name: string
+      email: string
+    }
+    to: Array<{
+      name: string
+      email: string
+    }>
+  }
+}
+
 export class EmailService {
   private env: Env
 
@@ -43,7 +59,7 @@ export class EmailService {
   }
 
   // Send email via SendPulse SMTP API using Fetch
-  private async sendPulseEmail(token: string, emailData: any): Promise<boolean> {
+  private async sendPulseEmail(token: string, emailData: SendPulseEmailData): Promise<boolean> {
     try {
       const response = await fetch('https://api.sendpulse.com/smtp/emails', {
         method: 'POST',
@@ -129,12 +145,11 @@ export class EmailService {
           if (!token) {
             console.log('⚠️  Failed to get SendPulse token, using console logging fallback')
           } else {
-            // Prepare email data for SendPulse API
-            const emailData = {
+            // Prepare email data for SendPulse API - HTML only to force HTML rendering
+            const emailData: SendPulseEmailData = {
               "email": {
                 "html": this.getVerificationEmailTemplate(name, code),
-                "text": `Hi ${name},\n\nYour verification code is: ${code}\n\nThis code will expire in 10 minutes.\n\nBest regards,\nThe Salvebot Team`,
-                "subject": "Verify your email address - Salvebot",
+                "subject": "🤖 Verify your email address - Salvebot",
                 "from": {
                   "name": "Salvebot Support",
                   "email": "support@salvebot.com"
@@ -149,6 +164,8 @@ export class EmailService {
             }
 
             console.log('📤 Sending verification email via SendPulse API...')
+            console.log('📧 Email data structure:', JSON.stringify(emailData, null, 2))
+            console.log('📧 HTML template preview (first 500 chars):', emailData.email.html.substring(0, 500) + '...')
             const emailSent = await this.sendPulseEmail(token, emailData)
             
             if (emailSent) {
@@ -199,12 +216,11 @@ export class EmailService {
           if (!token) {
             console.log('⚠️  Failed to get SendPulse token for password reset, using console logging fallback')
           } else {
-            // Prepare email data for SendPulse API
-            const emailData = {
+            // Prepare email data for SendPulse API - HTML only to force HTML rendering
+            const emailData: SendPulseEmailData = {
               "email": {
                 "html": this.getPasswordResetEmailTemplate(name, resetUrl),
-                "text": `Hi ${name},\n\nYou requested to reset your password for your Salvebot account.\n\nClick this link to reset your password: ${resetUrl}\n\nThis link will expire in 1 hour.\n\nIf you didn't request this, please ignore this email.\n\nBest regards,\nThe Salvebot Team`,
-                "subject": "Reset your password - Salvebot",
+                "subject": "🔐 Reset your password - Salvebot",
                 "from": {
                   "name": "Salvebot Support",
                   "email": "support@salvebot.com"
@@ -219,6 +235,7 @@ export class EmailService {
             }
 
             console.log('📤 Sending password reset email via SendPulse API...')
+            console.log('📧 Email data structure:', JSON.stringify(emailData, null, 2))
             const emailSent = await this.sendPulseEmail(token, emailData)
             
             if (emailSent) {
@@ -306,14 +323,13 @@ export class EmailService {
   }
 
   private getVerificationEmailTemplate(name: string, code: string): string {
-    return `
-<!DOCTYPE html>
-<html>
+    return `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Verify your email address - Salvebot</title>
-    <style>
+    <style type="text/css">
         body { 
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; 
             line-height: 1.6; 
@@ -337,16 +353,17 @@ export class EmailService {
             text-align: center; 
             padding: 40px 20px; 
         }
-        .logo-container { display: flex; align-items: center; justify-content: center; margin-bottom: 16px; }
+        .logo-container { text-align: center; margin-bottom: 16px; }
         .logo-icon { 
             width: 48px; 
             height: 48px; 
             background-color: rgba(255, 255, 255, 0.2); 
             border-radius: 12px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
+            display: inline-block; 
+            text-align: center; 
+            line-height: 48px; 
             margin-right: 12px; 
+            vertical-align: middle;
         }
         .logo-text { font-size: 28px; font-weight: 700; color: white; }
         .header-title { font-size: 24px; font-weight: 600; margin: 0; }
@@ -398,10 +415,10 @@ export class EmailService {
         <div class="container">
             <div class="header">
                 <div class="logo-container">
-                    <div class="logo-icon">
+                    <div class="logo-icon" style="display: inline-block;">
                         <div style="font-size: 24px; color: white; font-weight: bold;">🤖</div>
                     </div>
-                    <div class="logo-text">Salvebot</div>
+                    <div class="logo-text" style="display: inline-block; vertical-align: middle;">Salvebot</div>
                 </div>
                 <h1 class="header-title">Verify Your Email Address</h1>
             </div>
@@ -485,16 +502,17 @@ export class EmailService {
             text-align: center; 
             padding: 40px 20px; 
         }
-        .logo-container { display: flex; align-items: center; justify-content: center; margin-bottom: 16px; }
+        .logo-container { text-align: center; margin-bottom: 16px; }
         .logo-icon { 
             width: 48px; 
             height: 48px; 
             background-color: rgba(255, 255, 255, 0.2); 
             border-radius: 12px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
+            display: inline-block; 
+            text-align: center; 
+            line-height: 48px; 
             margin-right: 12px; 
+            vertical-align: middle;
         }
         .logo-text { font-size: 28px; font-weight: 700; color: white; }
         .header-title { font-size: 24px; font-weight: 600; margin: 0; }
