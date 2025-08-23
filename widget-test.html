@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salvebot Widget Demo</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        h1 {
+            font-size: 3em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        p {
+            font-size: 1.2em;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+        .demo-content {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 20px;
+            margin: 40px 0;
+        }
+        .widget-info {
+            background: rgba(255,255,255,0.9);
+            color: #333;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🤖 Salvebot Widget Demo</h1>
+        <p>This page demonstrates the Salvebot chatbot widget in action!</p>
+        
+        <div class="demo-content">
+            <h2>✨ Features Included</h2>
+            <ul style="text-align: left; display: inline-block;">
+                <li>🎨 Beautiful, modern UI with animations</li>
+                <li>📱 Fully mobile responsive design</li>
+                <li>💬 Real-time chat with AI assistant</li>
+                <li>📚 RAG-powered document knowledge retrieval</li>
+                <li>⌨️ Typing indicators and smooth animations</li>
+                <li>🕐 Message timestamps</li>
+                <li>✅ Confidence indicators for AI responses</li>
+                <li>🎯 Domain verification and security</li>
+            </ul>
+        </div>
+        
+        <div class="widget-info">
+            <h3>🚀 How to Test</h3>
+            <p>Look for the floating chat button in the bottom-right corner of this page!</p>
+            <p><strong>Click it to start chatting with the AI assistant.</strong></p>
+            <p><em>Note: You'll need a valid chatbot ID and verified domain for the widget to work with real data.</em></p>
+        </div>
+        
+        <div class="demo-content">
+            <h3>📋 Integration Code</h3>
+            <p>To add this widget to your website, simply include this script tag:</p>
+            <code style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; display: block; margin: 20px 0; text-align: left;">
+&lt;script src="https://salvebot-api.fideleamazing.workers.dev/api/chat/widget.js" 
+        data-chatbot-id="YOUR_CHATBOT_ID" 
+        data-domain="yourdomain.com"&gt;&lt;/script&gt;
+            </code>
+        </div>
+    </div>
+
+    <!-- Salvebot Widget Integration (Demo) -->
+    <script src="https://salvebot-api.fideleamazing.workers.dev/api/chat/widget.js" 
+            data-chatbot-id="demo-chatbot-123" 
+            data-domain="demo.salvebot.com"></script>
+</body>
+</html>

@@ -92,7 +92,7 @@ export function CreateChatbotModal({ isOpen, onClose, onSuccess }: CreateChatbot
     <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
       <div className="bg-card max-w-2xl w-full rounded-3xl border border-border/50 card-shadow-lg">
         {/* Header */}
-        <div className="flex items-center justify-between p-8 border-b border-border/50">
+        <div className="flex items-center justify-between p-6 border-b border-border/50">
           <div className="flex items-center space-x-3">
             <div className="p-2 bg-primary/10 rounded-xl">
               <BotIcon className="h-6 w-6 text-primary" />
@@ -111,7 +111,7 @@ export function CreateChatbotModal({ isOpen, onClose, onSuccess }: CreateChatbot
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="p-8 space-y-6">
+        <form onSubmit={handleSubmit} className="p-6 space-y-4">
           {error && (
             <div className="bg-destructive/10 border border-destructive/20 text-destructive px-6 py-4 rounded-xl animate-fade-in">
               <div className="flex items-center">
@@ -124,7 +124,7 @@ export function CreateChatbotModal({ isOpen, onClose, onSuccess }: CreateChatbot
           )}
 
           {/* Basic Info */}
-          <div className="space-y-4">
+          <div className="space-y-3">
             <h3 className="text-lg font-medium flex items-center">
               <BotIcon className="h-5 w-5 mr-2 text-primary" />
               Basic Information
@@ -170,7 +170,7 @@ export function CreateChatbotModal({ isOpen, onClose, onSuccess }: CreateChatbot
           </div>
 
           {/* Customization */}
-          <div className="space-y-4">
+          <div className="space-y-3">
             <h3 className="text-lg font-medium flex items-center">
               <PaletteIcon className="h-5 w-5 mr-2 text-primary" />
               Customization
@@ -185,7 +185,7 @@ export function CreateChatbotModal({ isOpen, onClose, onSuccess }: CreateChatbot
                 name="welcomeMessage"
                 value={formData.welcomeMessage}
                 onChange={handleInputChange}
-                className="form-input min-h-[80px] resize-none"
+                className="form-input min-h-[60px] resize-none"
                 placeholder="Hello! How can I help you today?"
                 maxLength={200}
               />
@@ -233,7 +233,7 @@ export function CreateChatbotModal({ isOpen, onClose, onSuccess }: CreateChatbot
           </div>
 
           {/* Actions */}
-          <div className="flex items-center justify-end space-x-3 pt-6 border-t border-border/50">
+          <div className="flex items-center justify-end space-x-3 pt-4 border-t border-border/50">
             <Button
               type="button"
               variant="outline"

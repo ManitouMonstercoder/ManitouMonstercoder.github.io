@@ -35,6 +35,9 @@
       "Bash(find:*)",
       "Bash(wrangler secret:*)"
     ],
-    "deny": []
+    "deny": [],
+    "additionalDirectories": [
+      "C:\\c\\salvebot"
+    ]
   }
 }
