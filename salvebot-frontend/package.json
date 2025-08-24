@@ -7,9 +7,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "export": "next build && next export",
-    "deploy": "npm run export && gh-pages -d out"
+    "lint": "next lint --fix",
+    "export": "next build",
+    "deploy": "npm run build && gh-pages -d out",
+    "clean": "rm -rf .next out node_modules package-lock.json",
+    "fresh-install": "npm run clean && npm install --no-audit --no-fund"
   },
   "dependencies": {
     "next": "14.2.5",
@@ -33,8 +35,12 @@
     "framer-motion": "^11.3.8"
   },
   "devDependencies": {
-    "eslint": "^8",
+    "eslint": "^8.57.0",
     "eslint-config-next": "14.2.5",
     "gh-pages": "^6.1.1"
+  },
+  "overrides": {
+    "rimraf": "^5.0.0",
+    "glob": "^10.0.0"
   }
 }
