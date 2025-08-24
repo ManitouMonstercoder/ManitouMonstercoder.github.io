@@ -391,3 +391,108 @@ export const CopyIcon: React.FC<IconProps> = ({ className = "h-5 w-5", size }) =
     <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
   </svg>
 )
+
+// BarChart3 Icon
+export const BarChart3Icon: React.FC<IconProps> = ({ className = "h-5 w-5", size }) => (
+  <svg 
+    className={className} 
+    width={size} 
+    height={size}
+    fill="none" 
+    stroke="currentColor" 
+    viewBox="0 0 24 24"
+  >
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 17v4a1 1 0 001 1h2a1 1 0 001-1v-4M3 17l4-8 4 6 4-11 4 4v9a1 1 0 01-1 1h-2a1 1 0 01-1-1v-4" />
+  </svg>
+)
+
+// TrendingUp Icon
+export const TrendingUpIcon: React.FC<IconProps> = ({ className = "h-5 w-5", size }) => (
+  <svg 
+    className={className} 
+    width={size} 
+    height={size}
+    fill="none" 
+    stroke="currentColor" 
+    viewBox="0 0 24 24"
+  >
+    <polyline points="23,6 13.5,15.5 8.5,10.5 1,18" />
+    <polyline points="17,6 23,6 23,12" />
+  </svg>
+)
+
+// Users Icon
+export const UsersIcon: React.FC<IconProps> = ({ className = "h-5 w-5", size }) => (
+  <svg 
+    className={className} 
+    width={size} 
+    height={size}
+    fill="none" 
+    stroke="currentColor" 
+    viewBox="0 0 24 24"
+  >
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+    <circle cx="9" cy="7" r="4" />
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" />
+  </svg>
+)
+
+// CreditCard Icon
+export const CreditCardIcon: React.FC<IconProps> = ({ className = "h-5 w-5", size }) => (
+  <svg 
+    className={className} 
+    width={size} 
+    height={size}
+    fill="none" 
+    stroke="currentColor" 
+    viewBox="0 0 24 24"
+  >
+    <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
+    <line x1="1" y1="10" x2="23" y2="10" />
+  </svg>
+)
+
+// User Icon
+export const UserIcon: React.FC<IconProps> = ({ className = "h-5 w-5", size }) => (
+  <svg 
+    className={className} 
+    width={size} 
+    height={size}
+    fill="none" 
+    stroke="currentColor" 
+    viewBox="0 0 24 24"
+  >
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
+    <circle cx="12" cy="7" r="4" />
+  </svg>
+)
+
+// Lock Icon
+export const LockIcon: React.FC<IconProps> = ({ className = "h-5 w-5", size }) => (
+  <svg 
+    className={className} 
+    width={size} 
+    height={size}
+    fill="none" 
+    stroke="currentColor" 
+    viewBox="0 0 24 24"
+  >
+    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+    <path d="M7 11V7a5 5 0 0110 0v4" />
+  </svg>
+)
+
+// Bell Icon
+export const BellIcon: React.FC<IconProps> = ({ className = "h-5 w-5", size }) => (
+  <svg 
+    className={className} 
+    width={size} 
+    height={size}
+    fill="none" 
+    stroke="currentColor" 
+    viewBox="0 0 24 24"
+  >
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9" />
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.73 21a2 2 0 01-3.46 0" />
+  </svg>
+)

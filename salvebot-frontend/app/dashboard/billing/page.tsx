@@ -48,14 +48,14 @@ export default function BillingPage() {
 
       if (userResponse.user) {
         setBillingInfo({
-          subscriptionStatus: userResponse.user.subscriptionStatus || 'trial',
+          subscriptionStatus: (userResponse.user.subscriptionStatus as 'active' | 'inactive' | 'trial' | 'cancelled') || 'trial',
           planName: getPlanName(userResponse.user.subscriptionStatus),
           trialEndDate: userResponse.user.trialEndDate,
           // These would come from Stripe data in a real implementation
           currentPeriodStart: undefined,
           currentPeriodEnd: undefined,
           cancelAtPeriodEnd: false,
-          customerId: userResponse.user.stripeCustomerId
+          customerId: undefined
         })
       }
 

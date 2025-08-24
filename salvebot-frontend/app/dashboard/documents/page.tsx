@@ -234,9 +234,8 @@ export default function DocumentsPage() {
                     </div>
                   </div>
                   <DocumentsList
-                    chatbotId={selectedChatbotId}
                     documents={documents}
-                    onDocumentDeleted={(docId) => {
+                    onDocumentDelete={(docId) => {
                       setDocuments(prev => prev.filter(doc => doc.id !== docId))
                     }}
                   />

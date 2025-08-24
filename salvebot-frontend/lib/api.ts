@@ -149,9 +149,6 @@ class ApiClient {
     })
   }
 
-  async getChatbot(id: string): Promise<any> {
-    return this.request(`/api/chatbots/${id}`)
-  }
 
   async updateChatbot(id: string, data: any): Promise<any> {
     return this.request(`/api/chatbots/${id}`, {
