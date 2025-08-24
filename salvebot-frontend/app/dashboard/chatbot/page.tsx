@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { AuthGuard } from '@/components/auth/AuthGuard'
 import { DocumentUpload } from '@/components/documents/DocumentUpload'
 import { DocumentsList } from '@/components/documents/DocumentsList'
-import { BotIcon, ArrowRightIcon, SettingsIcon, GlobeIcon, FileTextIcon, MessageSquareIcon, CheckCircle2Icon, AlertCircleIcon, ClockIcon } from '@/components/icons'
+import { BotIcon, ArrowRightIcon, SettingsIcon, GlobeIcon, FileTextIcon, MessageSquareIcon, CheckCircle2Icon, AlertCircleIcon, ClockIcon, EyeIcon } from '@/components/icons'
 import { api } from '@/lib/api'
 
 interface Document {
@@ -181,6 +181,14 @@ export default function ChatbotManagePage() {
               </div>
               
               <div className="flex items-center space-x-3">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => router.push(`/dashboard/preview?id=${chatbot.id}`)}
+                >
+                  <EyeIcon className="h-4 w-4 mr-2" />
+                  Preview
+                </Button>
                 <Button variant="outline" size="sm">
                   <SettingsIcon className="h-4 w-4 mr-2" />
                   Settings

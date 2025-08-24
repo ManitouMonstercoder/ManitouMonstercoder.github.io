@@ -286,3 +286,93 @@ export const SettingsIcon: React.FC<IconProps> = ({
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
   </svg>
 )
+
+// Eye Icon
+export const EyeIcon: React.FC<IconProps> = ({ className = "h-5 w-5", size }) => (
+  <svg 
+    className={className} 
+    width={size} 
+    height={size}
+    fill="none" 
+    stroke="currentColor" 
+    viewBox="0 0 24 24"
+  >
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+    <circle cx="12" cy="12" r="3" />
+  </svg>
+)
+
+// ArrowLeft Icon  
+export const ArrowLeftIcon: React.FC<IconProps> = ({ className = "h-5 w-5", size }) => (
+  <svg 
+    className={className} 
+    width={size} 
+    height={size}
+    fill="none" 
+    stroke="currentColor" 
+    viewBox="0 0 24 24"
+  >
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 12H5m7 7l-7-7 7-7" />
+  </svg>
+)
+
+// RefreshCw Icon
+export const RefreshCwIcon: React.FC<IconProps> = ({ className = "h-5 w-5", size }) => (
+  <svg 
+    className={className} 
+    width={size} 
+    height={size}
+    fill="none" 
+    stroke="currentColor" 
+    viewBox="0 0 24 24"
+  >
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M1 4v6h6M23 20v-6h-6" />
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15" />
+  </svg>
+)
+
+// ZoomIn Icon
+export const ZoomInIcon: React.FC<IconProps> = ({ className = "h-5 w-5", size }) => (
+  <svg 
+    className={className} 
+    width={size} 
+    height={size}
+    fill="none" 
+    stroke="currentColor" 
+    viewBox="0 0 24 24"
+  >
+    <circle cx="11" cy="11" r="8" />
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M11 8v6M8 11h6" />
+  </svg>
+)
+
+// ZoomOut Icon
+export const ZoomOutIcon: React.FC<IconProps> = ({ className = "h-5 w-5", size }) => (
+  <svg 
+    className={className} 
+    width={size} 
+    height={size}
+    fill="none" 
+    stroke="currentColor" 
+    viewBox="0 0 24 24"
+  >
+    <circle cx="11" cy="11" r="8" />
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M8 11h6" />
+  </svg>
+)
+
+// Monitor Icon
+export const MonitorIcon: React.FC<IconProps> = ({ className = "h-5 w-5", size }) => (
+  <svg 
+    className={className} 
+    width={size} 
+    height={size}
+    fill="none" 
+    stroke="currentColor" 
+    viewBox="0 0 24 24"
+  >
+    <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
+    <line x1="8" y1="21" x2="16" y2="21" />
+    <line x1="12" y1="17" x2="12" y2="21" />
+  </svg>
+)

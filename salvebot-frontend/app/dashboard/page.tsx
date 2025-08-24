@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
-import { BotIcon, SparklesIcon, FileTextIcon, GlobeIcon, ZapIcon } from '@/components/icons'
+import { BotIcon, SparklesIcon, FileTextIcon, GlobeIcon, ZapIcon, EyeIcon } from '@/components/icons'
 
 // Dashboard-specific icons with custom sizes
 const PlusIcon = ({ className = "h-4 w-4" }: { className?: string }) => (
@@ -90,7 +90,12 @@ export default function DashboardPage() {
               <span className="text-xl font-semibold">Salvebot</span>
             </div>
             <div className="flex items-center space-x-3">
-              <Button variant="ghost" size="sm" className="btn-hover">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="btn-hover"
+                onClick={() => router.push('/dashboard/settings')}
+              >
                 <SettingsIcon className="h-4 w-4" />
                 Settings
               </Button>
@@ -278,13 +283,24 @@ export default function DashboardPage() {
                                 : 'Pending'
                             }
                           </span>
-                          <Button 
-                            variant="outline" 
-                            size="sm"
-                            onClick={() => router.push(`/dashboard/chatbot?id=${chatbot.id}`)}
-                          >
-                            Manage
-                          </Button>
+                          <div className="flex items-center space-x-2">
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => router.push(`/dashboard/preview?id=${chatbot.id}`)}
+                              className="btn-hover"
+                            >
+                              <EyeIcon className="h-4 w-4 mr-1" />
+                              Preview
+                            </Button>
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => router.push(`/dashboard/chatbot?id=${chatbot.id}`)}
+                            >
+                              Manage
+                            </Button>
+                          </div>
                         </div>
                       </div>
                       <div className="grid grid-cols-3 gap-4 text-sm">
@@ -321,15 +337,27 @@ export default function DashboardPage() {
                 <PlusIcon className="h-4 w-4" />
                 Create New Bot
               </Button>
-              <Button variant="outline" className="w-full justify-start">
+              <Button 
+                variant="outline" 
+                className="w-full justify-start btn-hover"
+                onClick={() => router.push('/dashboard/documents')}
+              >
                 <FileTextIcon className="h-4 w-4" />
                 Upload Documents
               </Button>
-              <Button variant="outline" className="w-full justify-start">
+              <Button 
+                variant="outline" 
+                className="w-full justify-start btn-hover"
+                onClick={() => router.push('/dashboard/domains')}
+              >
                 <GlobeIcon className="h-4 w-4" />
                 Verify Domain
               </Button>
-              <Button variant="outline" className="w-full justify-start">
+              <Button 
+                variant="outline" 
+                className="w-full justify-start btn-hover"
+                onClick={() => router.push('/dashboard/analytics')}
+              >
                 <BarChart3Icon className="h-4 w-4" />
                 View Analytics
               </Button>
@@ -351,7 +379,12 @@ export default function DashboardPage() {
                   <span>2 / 5</span>
                 </div>
               </div>
-              <Button variant="outline" size="sm" className="w-full mt-4">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="w-full mt-4 btn-hover"
+                onClick={() => router.push('/dashboard/billing')}
+              >
                 Manage Billing
               </Button>
             </div>

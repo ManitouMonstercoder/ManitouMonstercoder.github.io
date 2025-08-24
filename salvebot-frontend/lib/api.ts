@@ -138,6 +138,10 @@ class ApiClient {
     return this.request('/api/chatbots')
   }
 
+  async getChatbot(chatbotId: string): Promise<any> {
+    return this.request(`/api/chatbots/${chatbotId}`)
+  }
+
   async createChatbot(data: any): Promise<any> {
     return this.request('/api/chatbots', {
       method: 'POST',
@@ -187,6 +191,79 @@ class ApiClient {
     return this.request(`/api/documents/${documentId}`, {
       method: 'DELETE',
     })
+  }
+
+  // Domain Verification API methods
+  async getDomainVerification(chatbotId: string): Promise<any> {
+    return this.request(`/api/domains/chatbot/${chatbotId}`)
+  }
+
+  async startDomainVerification(chatbotId: string, method: 'dns' | 'file'): Promise<any> {
+    return this.request(`/api/domains/verify`, {
+      method: 'POST',
+      body: JSON.stringify({ chatbotId, method })
+    })
+  }
+
+  async verifyDomain(chatbotId: string): Promise<any> {
+    return this.request(`/api/domains/verify/${chatbotId}`, {
+      method: 'PUT'
+    })
+  }
+
+  // Billing and Stripe API methods
+  async getUsage(): Promise<any> {
+    return this.request('/api/billing/usage')
+  }
+
+  async createStripeSession(planId: string): Promise<any> {
+    return this.request('/api/billing/create-checkout-session', {
+      method: 'POST',
+      body: JSON.stringify({ planId })
+    })
+  }
+
+  async createStripePortalSession(): Promise<any> {
+    return this.request('/api/billing/create-portal-session', {
+      method: 'POST'
+    })
+  }
+
+  // Settings API methods
+  async updateProfile(data: { name: string; company?: string }): Promise<any> {
+    return this.request('/api/user/profile', {
+      method: 'PUT',
+      body: JSON.stringify(data)
+    })
+  }
+
+  async changePassword(data: { currentPassword: string; newPassword: string }): Promise<any> {
+    return this.request('/api/user/change-password', {
+      method: 'POST',
+      body: JSON.stringify(data)
+    })
+  }
+
+  async updateNotificationSettings(notifications: any): Promise<any> {
+    return this.request('/api/user/notifications', {
+      method: 'PUT',
+      body: JSON.stringify(notifications)
+    })
+  }
+
+  async deleteAccount(): Promise<any> {
+    return this.request('/api/user/delete', {
+      method: 'DELETE'
+    })
+  }
+
+  // Analytics API methods
+  async getAnalytics(chatbotId: string, dateRange: string): Promise<any> {
+    const params = new URLSearchParams({
+      chatbotId,
+      dateRange
+    })
+    return this.request(`/api/analytics?${params.toString()}`)
   }
 }
 
