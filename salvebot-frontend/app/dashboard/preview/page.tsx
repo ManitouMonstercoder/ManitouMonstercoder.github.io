@@ -195,9 +195,35 @@ export default function PreviewPage() {
     }
   }
 
+  const getChatWindowPosition = (position: string) => {
+    switch (position) {
+      case 'bottom-left':
+        return 'left-0 bottom-16'
+      case 'top-right':
+        return 'right-0 top-16'
+      case 'top-left':
+        return 'left-0 top-16'
+      default:
+        return 'right-0 bottom-16'
+    }
+  }
+
   const getWidgetTheme = () => {
     const theme = chatbot?.settings?.theme || chatbot?.theme || 'light'
     return theme === 'dark' ? 'dark' : 'light'
+  }
+
+  const getWidgetAvatar = () => {
+    const avatar = (chatbot as any)?.settings?.avatar || (chatbot as any)?.avatar || 'bot'
+    const avatarMap = {
+      'bot': '🤖',
+      'assistant': '👨‍💼',
+      'support': '💁‍♀️',
+      'chat': '💬',
+      'help': '🆘',
+      'info': 'ℹ️'
+    }
+    return avatarMap[avatar as keyof typeof avatarMap] || '🤖'
   }
 
   if (!chatbotId) {
@@ -353,7 +379,7 @@ export default function PreviewPage() {
                     <div>
                       <h3 className="font-semibold mb-2">Widget Settings</h3>
                       <div className="space-y-1 text-sm">
-                        <p><span className="text-muted-foreground">Position:</span> {getWidgetPosition().replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}</p>
+                        <p><span className="text-muted-foreground">Position:</span> {(chatbot?.settings?.position || chatbot?.position || 'bottom-right').replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}</p>
                         <p><span className="text-muted-foreground">Theme:</span> {getWidgetTheme()}</p>
                         <p><span className="text-muted-foreground">Welcome:</span> {(chatbot.settings?.welcomeMessage || chatbot.welcomeMessage)?.substring(0, 30)}...</p>
                       </div>
@@ -447,15 +473,13 @@ export default function PreviewPage() {
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                             </svg>
                           ) : (
-                            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                            </svg>
+                            <span className="text-2xl">{getWidgetAvatar()}</span>
                           )}
                         </div>
 
                         {/* Chat Window */}
                         {widgetOpen && (
-                          <div className={`absolute ${chatbot.position?.includes('right') ? 'right-0' : 'left-0'} ${chatbot.position?.includes('top') ? 'top-16' : 'bottom-16'} w-80 h-96 bg-white rounded-2xl shadow-2xl border overflow-hidden ${getWidgetTheme()}`}>
+                          <div className={`absolute ${getChatWindowPosition(chatbot?.settings?.position || chatbot?.position || 'bottom-right')} w-80 h-96 bg-white rounded-2xl shadow-2xl border overflow-hidden ${getWidgetTheme()}`}>
                             {/* Header */}
                             <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-4">
                               <div className="flex items-center justify-between">

@@ -189,7 +189,11 @@ export default function ChatbotManagePage() {
                   <EyeIcon className="h-4 w-4 mr-2" />
                   Preview
                 </Button>
-                <Button variant="outline" size="sm">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => setActiveTab('settings')}
+                >
                   <SettingsIcon className="h-4 w-4 mr-2" />
                   Settings
                 </Button>
@@ -319,9 +323,210 @@ export default function ChatbotManagePage() {
 
           {/* Settings Tab */}
           {activeTab === 'settings' && (
-            <div className="bg-card p-8 rounded-2xl border border-border/50">
-              <h3 className="text-lg font-semibold mb-6">Chatbot Settings</h3>
-              <p className="text-muted-foreground">Settings management coming soon...</p>
+            <div className="space-y-6">
+              {/* Basic Settings */}
+              <div className="bg-card p-8 rounded-2xl border border-border/50">
+                <h3 className="text-lg font-semibold mb-6">Basic Settings</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Chatbot Name</label>
+                    <input
+                      type="text"
+                      defaultValue={chatbot.name}
+                      className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                      placeholder="Enter chatbot name"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Welcome Message</label>
+                    <input
+                      type="text"
+                      defaultValue={chatbot.welcomeMessage}
+                      className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                      placeholder="Hello! How can I help you today?"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Widget Appearance */}
+              <div className="bg-card p-8 rounded-2xl border border-border/50">
+                <h3 className="text-lg font-semibold mb-6">Widget Appearance</h3>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {/* Theme Selection */}
+                  <div>
+                    <label className="block text-sm font-medium mb-3">Theme</label>
+                    <div className="space-y-2">
+                      {['light', 'dark', 'auto'].map(theme => (
+                        <label key={theme} className="flex items-center space-x-2 cursor-pointer">
+                          <input
+                            type="radio"
+                            name="theme"
+                            value={theme}
+                            defaultChecked={chatbot.theme === theme}
+                            className="w-4 h-4 text-primary"
+                          />
+                          <span className="capitalize">{theme}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Position Selection */}
+                  <div>
+                    <label className="block text-sm font-medium mb-3">Position</label>
+                    <div className="space-y-2">
+                      {[
+                        { value: 'bottom-right', label: 'Bottom Right' },
+                        { value: 'bottom-left', label: 'Bottom Left' },
+                        { value: 'top-right', label: 'Top Right' },
+                        { value: 'top-left', label: 'Top Left' }
+                      ].map(position => (
+                        <label key={position.value} className="flex items-center space-x-2 cursor-pointer">
+                          <input
+                            type="radio"
+                            name="position"
+                            value={position.value}
+                            defaultChecked={chatbot.position === position.value}
+                            className="w-4 h-4 text-primary"
+                          />
+                          <span>{position.label}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Avatar Selection */}
+                  <div>
+                    <label className="block text-sm font-medium mb-3">Avatar</label>
+                    <div className="grid grid-cols-3 gap-2">
+                      {[
+                        { value: 'bot', icon: '🤖' },
+                        { value: 'assistant', icon: '👨‍💼' },
+                        { value: 'support', icon: '💁‍♀️' },
+                        { value: 'chat', icon: '💬' },
+                        { value: 'help', icon: '🆘' },
+                        { value: 'info', icon: 'ℹ️' }
+                      ].map(avatar => (
+                        <label key={avatar.value} className="cursor-pointer">
+                          <input
+                            type="radio"
+                            name="avatar"
+                            value={avatar.value}
+                            defaultChecked={(chatbot as any).avatar === avatar.value || avatar.value === 'bot'}
+                            className="sr-only"
+                          />
+                          <div className="w-12 h-12 border-2 border-border rounded-lg flex items-center justify-center hover:border-primary text-xl transition-colors">
+                            {avatar.icon}
+                          </div>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Color Customization */}
+                <div className="mt-6">
+                  <h4 className="text-md font-medium mb-4">Colors</h4>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium mb-2">Primary Color</label>
+                      <input
+                        type="color"
+                        defaultValue="#3b82f6"
+                        className="w-full h-10 border border-border rounded-lg cursor-pointer"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-2">Text Color</label>
+                      <input
+                        type="color"
+                        defaultValue="#1f2937"
+                        className="w-full h-10 border border-border rounded-lg cursor-pointer"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-2">Background</label>
+                      <input
+                        type="color"
+                        defaultValue="#ffffff"
+                        className="w-full h-10 border border-border rounded-lg cursor-pointer"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-2">Accent</label>
+                      <input
+                        type="color"
+                        defaultValue="#f3f4f6"
+                        className="w-full h-10 border border-border rounded-lg cursor-pointer"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Advanced Settings */}
+              <div className="bg-card p-8 rounded-2xl border border-border/50">
+                <h3 className="text-lg font-semibold mb-6">Advanced Settings</h3>
+                
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="font-medium">Auto-open widget</h4>
+                      <p className="text-sm text-muted-foreground">Automatically open chat after page load</p>
+                    </div>
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input type="checkbox" className="sr-only peer" />
+                      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                    </label>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="font-medium">Show typing indicator</h4>
+                      <p className="text-sm text-muted-foreground">Display typing animation when AI is responding</p>
+                    </div>
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input type="checkbox" className="sr-only peer" defaultChecked />
+                      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                    </label>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="font-medium">Enable sound notifications</h4>
+                      <p className="text-sm text-muted-foreground">Play sound when new messages arrive</p>
+                    </div>
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input type="checkbox" className="sr-only peer" />
+                      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                    </label>
+                  </div>
+                </div>
+
+                <div className="mt-6">
+                  <label className="block text-sm font-medium mb-2">Auto-open delay (seconds)</label>
+                  <input
+                    type="number"
+                    defaultValue="3"
+                    min="0"
+                    max="30"
+                    className="w-32 px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                  />
+                </div>
+              </div>
+
+              {/* Save Button */}
+              <div className="flex justify-end space-x-3">
+                <Button variant="outline">
+                  Cancel
+                </Button>
+                <Button className="btn-hover">
+                  Save Changes
+                </Button>
+              </div>
             </div>
           )}
 
