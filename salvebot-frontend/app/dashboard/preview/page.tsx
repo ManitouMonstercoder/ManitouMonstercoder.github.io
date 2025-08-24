@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { AuthGuard } from '@/components/auth/AuthGuard'
-import { BotIcon, ArrowLeftIcon, EyeIcon, CopyIcon, RefreshCwIcon, ZoomInIcon, ZoomOutIcon, MonitorIcon } from '@/components/icons'
+import { ArrowLeftIcon, EyeIcon, CopyIcon, RefreshCwIcon, ZoomInIcon, ZoomOutIcon, MonitorIcon } from '@/components/icons'
 import { api } from '@/lib/api'
 
 interface Chatbot {
@@ -493,7 +493,7 @@ export default function PreviewPage() {
                                   type="text"
                                   placeholder="Type your message..."
                                   className="flex-1 px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                  onKeyPress={(e) => {
+                                  onKeyDown={(e) => {
                                     if (e.key === 'Enter') {
                                       const target = e.target as HTMLInputElement
                                       if (target.value.trim()) {
