@@ -68,19 +68,62 @@ export default function PreviewPage() {
       setIsCapturing(true)
       setError('')
 
-      // Add https:// if not present
-      const url = domain.startsWith('http') ? domain : `https://${domain}`
+      // Create a minimalist mockup background instead of real screenshot
+      const canvas = document.createElement('canvas')
+      const ctx = canvas.getContext('2d')
+      canvas.width = 1200
+      canvas.height = 800
       
-      // Using a screenshot API service (you can replace with your preferred service)
-      const screenshotApiUrl = `https://api.screenshotone.com/take?url=${encodeURIComponent(url)}&viewport_width=1920&viewport_height=1080&device_scale_factor=1&format=png&cache=false&wait_for=2000&access_key=demo`
+      if (ctx) {
+        // Create a simple webpage mockup
+        ctx.fillStyle = '#ffffff'
+        ctx.fillRect(0, 0, canvas.width, canvas.height)
+        
+        // Header
+        ctx.fillStyle = '#f8fafc'
+        ctx.fillRect(0, 0, canvas.width, 80)
+        
+        // Navigation elements
+        ctx.fillStyle = '#e2e8f0'
+        ctx.fillRect(50, 25, 100, 30)
+        ctx.fillRect(170, 25, 80, 30)
+        ctx.fillRect(270, 25, 90, 30)
+        
+        // Main content area
+        ctx.fillStyle = '#f1f5f9'
+        ctx.fillRect(50, 120, canvas.width - 100, 200)
+        ctx.fillStyle = '#cbd5e1'
+        ctx.fillRect(70, 140, 300, 20)
+        ctx.fillRect(70, 180, 500, 15)
+        ctx.fillRect(70, 210, 400, 15)
+        ctx.fillRect(70, 240, 350, 15)
+        
+        // Sidebar
+        ctx.fillStyle = '#e2e8f0'
+        ctx.fillRect(canvas.width - 250, 120, 200, 300)
+        ctx.fillStyle = '#94a3b8'
+        ctx.fillRect(canvas.width - 230, 140, 160, 15)
+        ctx.fillRect(canvas.width - 230, 170, 120, 15)
+        ctx.fillRect(canvas.width - 230, 200, 140, 15)
+        
+        // Footer
+        ctx.fillStyle = '#334155'
+        ctx.fillRect(0, canvas.height - 60, canvas.width, 60)
+        
+        // Add domain text
+        ctx.fillStyle = '#64748b'
+        ctx.font = '16px Arial'
+        ctx.fillText(domain, 50, 50)
+      }
       
-      setScreenshotUrl(screenshotApiUrl)
-      setSuccessMessage('Screenshot captured successfully!')
+      const mockupUrl = canvas.toDataURL('image/png')
+      setScreenshotUrl(mockupUrl)
+      setSuccessMessage('Website preview generated successfully!')
       
       setTimeout(() => setSuccessMessage(''), 3000)
     } catch (error) {
-      console.error('Failed to capture screenshot:', error)
-      setError('Failed to capture website screenshot')
+      console.error('Failed to generate preview:', error)
+      setError('Failed to generate website preview')
     } finally {
       setIsCapturing(false)
     }
