@@ -144,6 +144,12 @@ class ApiClient {
     return this.request(`/api/chatbots/${chatbotId}`)
   }
 
+  async refreshEmbedCode(chatbotId: string): Promise<any> {
+    return this.request(`/api/chatbots/${chatbotId}/refresh-embed`, {
+      method: 'POST'
+    })
+  }
+
   async createChatbot(data: any): Promise<any> {
     return this.request('/api/chatbots', {
       method: 'POST',

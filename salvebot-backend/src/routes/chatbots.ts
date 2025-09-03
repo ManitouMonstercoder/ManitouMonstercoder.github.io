@@ -232,6 +232,40 @@ chatbotsRouter.delete('/:id', async (c) => {
   }
 })
 
+// Refresh embed code endpoint
+chatbotsRouter.post('/:id/refresh-embed', async (c) => {
+  const user = await authenticateUser(c)
+  if (!user) {
+    return errorResponse('Unauthorized', 401)
+  }
+
+  const chatbotId = c.req.param('id')
+  
+  try {
+    const chatbotData = await c.env.CHATBOTS.get(`user:${user.id}:${chatbotId}`)
+    if (!chatbotData) {
+      return errorResponse('Chatbot not found', 404)
+    }
+
+    const chatbot: Chatbot = JSON.parse(chatbotData)
+    
+    // Regenerate embed code with correct URL
+    chatbot.embedCode = generateEmbedCode(chatbotId, chatbot.domain)
+    chatbot.updatedAt = new Date().toISOString()
+
+    // Update the chatbot record
+    await c.env.CHATBOTS.put(`user:${user.id}:${chatbotId}`, JSON.stringify(chatbot))
+
+    return jsonResponse({ 
+      message: 'Embed code refreshed successfully',
+      embedCode: chatbot.embedCode
+    })
+  } catch (error) {
+    console.error('Refresh embed code error:', error)
+    return errorResponse('Failed to refresh embed code', 500)
+  }
+})
+
 // Admin endpoint to manually activate a chatbot (for debugging)
 chatbotsRouter.post('/:id/activate', async (c) => {
   const user = await authenticateUser(c)
