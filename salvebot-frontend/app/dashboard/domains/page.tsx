@@ -261,7 +261,7 @@ export default function DomainsPage() {
           ) : (
             <div className="space-y-6">
               {error && (
-                <div className="bg-destructive/10 border border-destructive/20 text-destructive px-6 py-4 rounded-xl">
+                <div className="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded-lg max-w-2xl mx-auto">
                   <div className="flex items-center">
                     <AlertCircleIcon className="h-5 w-5 mr-3 flex-shrink-0" />
                     <span className="text-sm">{error}</span>
@@ -270,7 +270,7 @@ export default function DomainsPage() {
               )}
 
               {successMessage && (
-                <div className="bg-green-50 border border-green-200 text-green-800 px-6 py-4 rounded-xl">
+                <div className="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg max-w-2xl mx-auto">
                   <div className="flex items-center">
                     <CheckCircle2Icon className="h-5 w-5 mr-3 flex-shrink-0" />
                     <span className="text-sm">{successMessage}</span>

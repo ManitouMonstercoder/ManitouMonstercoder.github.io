@@ -222,8 +222,9 @@ domainsRouter.put('/verify/:chatbotId', async (c) => {
     await c.env.CHATBOTS.put(verificationKey, JSON.stringify(verification))
 
     if (isVerified) {
-      // Update chatbot verification status
+      // Update chatbot verification and activation status
       chatbot.isVerified = true
+      chatbot.isActive = true // Activate the chatbot once domain is verified
       chatbot.verifiedAt = new Date().toISOString()
       
       await c.env.CHATBOTS.put(`user:${user.id}:${chatbotId}`, JSON.stringify(chatbot))
