@@ -58,7 +58,7 @@ export function generateEmbedCode(chatbotId: string, domain: string): string {
   return `<script>
   (function() {
     var script = document.createElement('script');
-    script.src = 'https://api.salvebot.workers.dev/widget.js';
+    script.src = 'https://salvebot-api.fideleamazing.workers.dev/api/chat/widget.js';
     script.async = true;
     script.setAttribute('data-chatbot-id', '${chatbotId}');
     script.setAttribute('data-domain', '${domain}');

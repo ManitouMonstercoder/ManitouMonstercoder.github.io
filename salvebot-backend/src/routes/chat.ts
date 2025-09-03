@@ -219,7 +219,7 @@ chatRouter.get('/widget.js', async (c) => {
 (function() {
   'use strict';
   
-  const WIDGET_API_BASE = '${c.env.CORS_ORIGIN || 'https://api.salvebot.workers.dev'}';
+  const WIDGET_API_BASE = 'https://salvebot-api.fideleamazing.workers.dev';
   
   function createWidget() {
     const script = document.currentScript;
