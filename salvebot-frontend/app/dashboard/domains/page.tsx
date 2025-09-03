@@ -49,7 +49,17 @@ export default function DomainsPage() {
           chatbotsResponse.chatbots.map(async (chatbot: Chatbot) => {
             try {
               const domainResponse = await api.getDomainVerification(chatbot.id)
-              return domainResponse
+              // Transform backend response to match frontend expectations
+              return {
+                id: `domain-${chatbot.id}`,
+                chatbotId: chatbot.id,
+                domain: domainResponse.domain,
+                isVerified: domainResponse.isVerified,
+                verificationToken: domainResponse.verification?.token || '',
+                verificationMethod: domainResponse.verification?.method || 'dns' as const,
+                createdAt: domainResponse.verification?.createdAt || new Date().toISOString(),
+                verifiedAt: domainResponse.verification?.verifiedAt
+              }
             } catch (err) {
               // Return a default structure if no verification exists
               return {
@@ -84,7 +94,11 @@ export default function DomainsPage() {
       // Update the domains list with the new verification data
       setDomains(prev => prev.map(domain => 
         domain.chatbotId === chatbotId 
-          ? { ...domain, ...response, verificationMethod: method }
+          ? { 
+              ...domain, 
+              verificationToken: response.verification.token,
+              verificationMethod: method
+            }
           : domain
       ))
       
@@ -153,12 +167,12 @@ export default function DomainsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <strong>Name:</strong> _salvebot-verification<br />
-                <strong>Value:</strong> {domain.verificationToken}
+                <strong>Value:</strong> salvebot-verification={domain.verificationToken}
               </div>
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => copyToClipboard(domain.verificationToken)}
+                onClick={() => copyToClipboard(`salvebot-verification=${domain.verificationToken}`)}
               >
                 <CopyIcon className="h-4 w-4" />
               </Button>
@@ -170,9 +184,9 @@ export default function DomainsPage() {
         </div>
       )
     } else {
-      const verificationFile = `salvebot-verification-${domain.verificationToken}.txt`
-      const fileContent = domain.verificationToken
-      const fileUrl = `https://${domain.domain}/${verificationFile}`
+      const verificationFile = `salvebot-verification.txt`
+      const fileContent = `salvebot-verification=${domain.verificationToken}`
+      const fileUrl = `https://${domain.domain}/.well-known/${verificationFile}`
       
       return (
         <div className="bg-muted/50 p-4 rounded-lg">
@@ -194,7 +208,7 @@ export default function DomainsPage() {
             </div>
           </div>
           <ol start={3} className="space-y-2 text-sm mt-2">
-            <li>3. Upload the file to your website's root directory</li>
+            <li>3. Upload the file to your website's /.well-known/ directory</li>
             <li>4. Make sure it's accessible at: <a href={fileUrl} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">{fileUrl}</a></li>
           </ol>
         </div>

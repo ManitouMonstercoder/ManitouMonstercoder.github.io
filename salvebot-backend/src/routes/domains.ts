@@ -3,7 +3,7 @@ import { zValidator } from '@hono/zod-validator'
 import { z } from 'zod'
 import { Env, Chatbot, User } from '../types'
 import { AuthService } from '../lib/auth'
-import { generateId, jsonResponse, errorResponse } from '../lib/utils'
+import { generateId, generateVerificationToken, jsonResponse, errorResponse } from '../lib/utils'
 
 const domainsRouter = new Hono<{ Bindings: Env }>()
 
@@ -96,7 +96,7 @@ domainsRouter.post('/verify', zValidator('json', startVerificationSchema), async
     const chatbot: Chatbot = JSON.parse(chatbotData)
 
     // Generate verification token
-    const verificationToken = generateId(32)
+    const verificationToken = generateVerificationToken()
 
     // Create verification data based on method
     let verification
