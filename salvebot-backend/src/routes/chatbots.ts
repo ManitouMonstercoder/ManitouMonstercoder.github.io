@@ -232,4 +232,48 @@ chatbotsRouter.delete('/:id', async (c) => {
   }
 })
 
+// Admin endpoint to manually activate a chatbot (for debugging)
+chatbotsRouter.post('/:id/activate', async (c) => {
+  const user = await authenticateUser(c)
+  if (!user) {
+    return errorResponse('Unauthorized', 401)
+  }
+
+  const chatbotId = c.req.param('id')
+  
+  try {
+    const chatbotData = await c.env.CHATBOTS.get(`user:${user.id}:${chatbotId}`)
+    if (!chatbotData) {
+      return errorResponse('Chatbot not found', 404)
+    }
+
+    const chatbot: Chatbot = JSON.parse(chatbotData)
+    
+    // Force activate the chatbot
+    const now = new Date().toISOString()
+    chatbot.isActive = true
+    chatbot.isVerified = true
+    chatbot.updatedAt = now
+    chatbot.verifiedAt = now
+
+    // Update the main chatbot record
+    const userChatbotKey = `user:${user.id}:${chatbotId}`
+    await c.env.CHATBOTS.put(userChatbotKey, JSON.stringify(chatbot))
+    
+    // Ensure ID mapping exists
+    const chatbotKey = await c.env.CHATBOTS.get(`id:${chatbotId}`)
+    if (!chatbotKey) {
+      await c.env.CHATBOTS.put(`id:${chatbotId}`, userChatbotKey)
+    }
+
+    return jsonResponse({ 
+      message: 'Chatbot activated successfully',
+      chatbot 
+    })
+  } catch (error) {
+    console.error('Activate chatbot error:', error)
+    return errorResponse('Failed to activate chatbot', 500)
+  }
+})
+
 export { chatbotsRouter }

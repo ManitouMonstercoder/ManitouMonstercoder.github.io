@@ -223,16 +223,24 @@ domainsRouter.put('/verify/:chatbotId', async (c) => {
 
     if (isVerified) {
       // Update chatbot verification and activation status
+      const now = new Date().toISOString()
       chatbot.isVerified = true
       chatbot.isActive = true // Activate the chatbot once domain is verified
-      chatbot.verifiedAt = new Date().toISOString()
+      chatbot.verifiedAt = now
+      chatbot.updatedAt = now
       
-      await c.env.CHATBOTS.put(`user:${user.id}:${chatbotId}`, JSON.stringify(chatbot))
+      // Update the main chatbot record
+      const userChatbotKey = `user:${user.id}:${chatbotId}`
+      await c.env.CHATBOTS.put(userChatbotKey, JSON.stringify(chatbot))
       
-      // Also update the ID mapping
+      // Verify the ID mapping exists and is correct
       const chatbotKey = await c.env.CHATBOTS.get(`id:${chatbotId}`)
-      if (chatbotKey) {
-        await c.env.CHATBOTS.put(chatbotKey, JSON.stringify(chatbot))
+      if (!chatbotKey) {
+        // Create the ID mapping if it doesn't exist
+        await c.env.CHATBOTS.put(`id:${chatbotId}`, userChatbotKey)
+      } else if (chatbotKey !== userChatbotKey) {
+        // Update the ID mapping if it's incorrect
+        await c.env.CHATBOTS.put(`id:${chatbotId}`, userChatbotKey)
       }
     }
 
