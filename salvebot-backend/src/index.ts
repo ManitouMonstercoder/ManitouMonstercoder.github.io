@@ -88,13 +88,6 @@ app.post('/api/webhooks/stripe', async (c) => {
 })
 
 
-// Domain verification endpoints
-app.post('/api/domains/verify', async (c) => {
-  // TODO: Implement domain verification
-  // This would verify domain ownership via DNS or file upload
-  return errorResponse('Domain verification not implemented yet', 501)
-})
-
 // Billing endpoints
 app.post('/api/billing/create-checkout', async (c) => {
   // TODO: Implement Stripe checkout session creation

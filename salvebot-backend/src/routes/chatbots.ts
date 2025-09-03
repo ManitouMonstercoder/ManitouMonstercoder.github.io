@@ -91,7 +91,7 @@ chatbotsRouter.post('/', zValidator('json', createChatbotSchema), async (c) => {
       userId: user.id,
       name,
       domain,
-      isActive: true, // Allow immediate testing, can be disabled later if needed
+      isActive: false, // User must verify domain before chatbot can work
       isVerified: false,
       embedCode: generateEmbedCode(chatbotId, domain),
       createdAt: now,
