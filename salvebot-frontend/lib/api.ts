@@ -262,6 +262,20 @@ class ApiClient {
     })
     return this.request(`/api/analytics?${params.toString()}`)
   }
+
+  // Chat API methods
+  async sendChatMessage(chatbotId: string, message: string, sessionId?: string, domain?: string): Promise<any> {
+    const currentDomain = domain || (typeof window !== 'undefined' ? window.location.hostname : 'localhost')
+    
+    return this.request(`/api/chat/${chatbotId}`, {
+      method: 'POST',
+      body: JSON.stringify({
+        message,
+        sessionId,
+        domain: currentDomain
+      })
+    })
+  }
 }
 
 export const api = new ApiClient()

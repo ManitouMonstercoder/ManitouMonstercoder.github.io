@@ -40,6 +40,8 @@ export default function PreviewPage() {
   const [zoomLevel, setZoomLevel] = useState(1)
   const [widgetOpen, setWidgetOpen] = useState(false)
   const [messages, setMessages] = useState<Array<{ role: 'user' | 'assistant', content: string }>>([])
+  const [conversationId, setConversationId] = useState<string | null>(null)
+  const [isTyping, setIsTyping] = useState(false)
 
   useEffect(() => {
     if (chatbotId) {
@@ -148,10 +150,15 @@ export default function PreviewPage() {
   }
 
   const toggleWidget = () => {
-    setWidgetOpen(!widgetOpen)
-    
-    if (!widgetOpen && messages.length === 0) {
-      // Add welcome message when opening for the first time
+    if (widgetOpen) {
+      // Reset conversation when closing widget
+      setWidgetOpen(false)
+      setMessages([])
+      setConversationId(null)
+      setIsTyping(false)
+    } else {
+      // Open widget and add welcome message
+      setWidgetOpen(true)
       setMessages([{
         role: 'assistant',
         content: chatbot?.settings?.welcomeMessage || chatbot?.welcomeMessage || 'Hello! How can I help you today?'
@@ -163,21 +170,46 @@ export default function PreviewPage() {
     setMessages(prev => [...prev, { role, content }])
   }
 
-  const handleTestMessage = (userMessage: string) => {
+  const handleTestMessage = async (userMessage: string) => {
+    if (!chatbot?.id) return
+
     addMessage('user', userMessage)
-    
-    // Simulate AI response
-    setTimeout(() => {
-      const responses = [
-        "Thanks for your message! This is a preview of how your chatbot will respond.",
-        "I'm a demo response from your AI assistant. Your actual responses will be powered by your uploaded documents.",
-        "This is how your customers will interact with your chatbot on your website!",
-        "Great question! In the live version, I'll have access to all your knowledge base."
-      ]
+    setIsTyping(true)
+
+    try {
+      // Send message to RAG-powered AI backend
+      const response = await api.sendChatMessage(
+        chatbot.id, 
+        userMessage, 
+        conversationId || undefined,
+        chatbot.domain
+      )
+
+      if (response.response) {
+        addMessage('assistant', response.response)
+        
+        // Update session ID from backend
+        if (response.sessionId) {
+          setConversationId(response.sessionId)
+        }
+      } else {
+        addMessage('assistant', 'Sorry, I encountered an issue processing your message. Please try again.')
+      }
+
+    } catch (error: any) {
+      console.error('Failed to send message:', error)
       
-      const randomResponse = responses[Math.floor(Math.random() * responses.length)]
-      addMessage('assistant', randomResponse)
-    }, 1000)
+      // Show more specific error messages
+      if (error.message?.includes('403')) {
+        addMessage('assistant', 'Sorry, this chatbot is not available for your domain. Please check your domain verification.')
+      } else if (error.message?.includes('500')) {
+        addMessage('assistant', 'Sorry, I\'m experiencing technical difficulties. Please try again in a moment.')
+      } else {
+        addMessage('assistant', 'Sorry, I\'m having trouble connecting right now. Please try again later.')
+      }
+    } finally {
+      setIsTyping(false)
+    }
   }
 
   const getWidgetPosition = () => {
@@ -508,6 +540,21 @@ export default function PreviewPage() {
                                   </div>
                                 </div>
                               ))}
+                              
+                              {/* Typing Indicator */}
+                              {isTyping && (
+                                <div className="flex justify-start">
+                                  <div className="bg-white text-gray-800 shadow-sm border px-3 py-2 rounded-lg text-sm">
+                                    <div className="flex space-x-1">
+                                      <div className="flex space-x-1">
+                                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
                             </div>
 
                             {/* Input */}
@@ -515,10 +562,11 @@ export default function PreviewPage() {
                               <div className="flex space-x-2">
                                 <input
                                   type="text"
-                                  placeholder="Type your message..."
-                                  className="flex-1 px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                  placeholder={isTyping ? "AI is typing..." : "Type your message..."}
+                                  disabled={isTyping}
+                                  className={`flex-1 px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${isTyping ? 'opacity-50 cursor-not-allowed' : ''}`}
                                   onKeyDown={(e) => {
-                                    if (e.key === 'Enter') {
+                                    if (e.key === 'Enter' && !isTyping) {
                                       const target = e.target as HTMLInputElement
                                       if (target.value.trim()) {
                                         handleTestMessage(target.value)
@@ -528,16 +576,19 @@ export default function PreviewPage() {
                                   }}
                                 />
                                 <button 
-                                  className="px-4 py-2 bg-blue-500 text-white rounded-lg text-sm hover:bg-blue-600"
+                                  className={`px-4 py-2 bg-blue-500 text-white rounded-lg text-sm hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed`}
+                                  disabled={isTyping}
                                   onClick={() => {
-                                    const input = document.querySelector('input[placeholder="Type your message..."]') as HTMLInputElement
-                                    if (input?.value.trim()) {
-                                      handleTestMessage(input.value)
-                                      input.value = ''
+                                    if (!isTyping) {
+                                      const input = document.querySelector('input[type="text"]') as HTMLInputElement
+                                      if (input?.value.trim()) {
+                                        handleTestMessage(input.value)
+                                        input.value = ''
+                                      }
                                     }
                                   }}
                                 >
-                                  Send
+                                  {isTyping ? '...' : 'Send'}
                                 </button>
                               </div>
                             </div>
