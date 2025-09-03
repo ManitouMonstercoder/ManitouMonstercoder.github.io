@@ -1,11 +1,27 @@
 import { Hono } from 'hono'
 import { zValidator } from '@hono/zod-validator'
 import { z } from 'zod'
-import { Env, Chatbot } from '../types'
-import { authMiddleware } from '../lib/auth'
+import { Env, Chatbot, User } from '../types'
+import { AuthService } from '../lib/auth'
 import { generateId, jsonResponse, errorResponse } from '../lib/utils'
 
 const domainsRouter = new Hono<{ Bindings: Env }>()
+
+async function authenticateUser(c: any): Promise<User | null> {
+  const authHeader = c.req.header('Authorization')
+  const authService = new AuthService(c.env.JWT_SECRET)
+  
+  const token = authService.extractBearerToken(authHeader)
+  if (!token) return null
+
+  const payload = await authService.verifyToken(token)
+  if (!payload) return null
+
+  const userData = await c.env.USERS.get(payload.email)
+  if (!userData) return null
+
+  return JSON.parse(userData)
+}
 
 const startVerificationSchema = z.object({
   chatbotId: z.string().min(1),
@@ -17,13 +33,17 @@ const verifyDomainSchema = z.object({
 })
 
 // Get domain verification status for a chatbot
-domainsRouter.get('/chatbot/:chatbotId', authMiddleware, async (c) => {
+domainsRouter.get('/chatbot/:chatbotId', async (c) => {
+  const user = await authenticateUser(c)
+  if (!user) {
+    return errorResponse('Unauthorized', 401)
+  }
+
   const chatbotId = c.req.param('chatbotId')
-  const userId = c.get('userId')
 
   try {
     // Get chatbot to verify ownership
-    const chatbotData = await c.env.CHATBOTS.get(`user:${userId}:${chatbotId}`)
+    const chatbotData = await c.env.CHATBOTS.get(`user:${user.id}:${chatbotId}`)
     if (!chatbotData) {
       return errorResponse('Chatbot not found', 404)
     }
@@ -58,13 +78,17 @@ domainsRouter.get('/chatbot/:chatbotId', authMiddleware, async (c) => {
 })
 
 // Start domain verification process
-domainsRouter.post('/verify', authMiddleware, zValidator('json', startVerificationSchema), async (c) => {
+domainsRouter.post('/verify', zValidator('json', startVerificationSchema), async (c) => {
+  const user = await authenticateUser(c)
+  if (!user) {
+    return errorResponse('Unauthorized', 401)
+  }
+
   const { chatbotId, method } = c.req.valid('json')
-  const userId = c.get('userId')
 
   try {
     // Get chatbot to verify ownership
-    const chatbotData = await c.env.CHATBOTS.get(`user:${userId}:${chatbotId}`)
+    const chatbotData = await c.env.CHATBOTS.get(`user:${user.id}:${chatbotId}`)
     if (!chatbotData) {
       return errorResponse('Chatbot not found', 404)
     }
@@ -115,13 +139,17 @@ domainsRouter.post('/verify', authMiddleware, zValidator('json', startVerificati
 })
 
 // Verify domain ownership
-domainsRouter.put('/verify/:chatbotId', authMiddleware, async (c) => {
+domainsRouter.put('/verify/:chatbotId', async (c) => {
+  const user = await authenticateUser(c)
+  if (!user) {
+    return errorResponse('Unauthorized', 401)
+  }
+
   const chatbotId = c.req.param('chatbotId')
-  const userId = c.get('userId')
 
   try {
     // Get chatbot to verify ownership
-    const chatbotData = await c.env.CHATBOTS.get(`user:${userId}:${chatbotId}`)
+    const chatbotData = await c.env.CHATBOTS.get(`user:${user.id}:${chatbotId}`)
     if (!chatbotData) {
       return errorResponse('Chatbot not found', 404)
     }
@@ -198,7 +226,7 @@ domainsRouter.put('/verify/:chatbotId', authMiddleware, async (c) => {
       chatbot.isVerified = true
       chatbot.verifiedAt = new Date().toISOString()
       
-      await c.env.CHATBOTS.put(`user:${userId}:${chatbotId}`, JSON.stringify(chatbot))
+      await c.env.CHATBOTS.put(`user:${user.id}:${chatbotId}`, JSON.stringify(chatbot))
       
       // Also update the ID mapping
       const chatbotKey = await c.env.CHATBOTS.get(`id:${chatbotId}`)
