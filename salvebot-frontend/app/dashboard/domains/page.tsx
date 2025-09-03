@@ -127,11 +127,16 @@ export default function DomainsPage() {
         
         setChatbots(prev => prev.map(chatbot =>
           chatbot.id === chatbotId
-            ? { ...chatbot, isVerified: true }
+            ? { ...chatbot, isVerified: true, isActive: true }
             : chatbot
         ))
         
         setSuccessMessage('Domain verified successfully! Your chatbot is now active.')
+        
+        // Refresh data to get updated chatbot status from backend
+        setTimeout(() => {
+          loadData()
+        }, 1000)
       } else {
         setError('Domain verification failed. Please check your DNS records or verification file.')
       }
@@ -391,9 +396,9 @@ export default function DomainsPage() {
           )}
         </main>
 
-        {/* Bottom-left notifications */}
+        {/* Bottom-right notifications */}
         {error && (
-          <div className="fixed bottom-6 left-6 z-50 bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg shadow-lg max-w-sm animate-in slide-in-from-left-5 fade-in-0">
+          <div className="fixed bottom-6 right-6 z-50 bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg shadow-lg max-w-sm animate-in slide-in-from-right-5 fade-in-0">
             <div className="flex items-start">
               <AlertCircleIcon className="h-5 w-5 mr-3 flex-shrink-0 mt-0.5" />
               <div>
@@ -411,7 +416,7 @@ export default function DomainsPage() {
         )}
 
         {successMessage && (
-          <div className="fixed bottom-6 left-6 z-50 bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg shadow-lg max-w-sm animate-in slide-in-from-left-5 fade-in-0">
+          <div className="fixed bottom-6 right-6 z-50 bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg shadow-lg max-w-sm animate-in slide-in-from-right-5 fade-in-0">
             <div className="flex items-start">
               <CheckCircle2Icon className="h-5 w-5 mr-3 flex-shrink-0 mt-0.5" />
               <div>

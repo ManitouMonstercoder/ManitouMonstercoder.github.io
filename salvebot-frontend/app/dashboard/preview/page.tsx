@@ -638,9 +638,9 @@ Please check the browser console for more details.`)
           )}
         </main>
 
-        {/* Bottom-left notifications */}
+        {/* Bottom-right notifications */}
         {error && (
-          <div className="fixed bottom-6 left-6 z-50 bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg shadow-lg max-w-sm animate-in slide-in-from-left-5 fade-in-0">
+          <div className="fixed bottom-6 right-6 z-50 bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg shadow-lg max-w-sm animate-in slide-in-from-right-5 fade-in-0">
             <div className="flex items-start">
               <div className="w-5 h-5 bg-red-200 rounded-full flex items-center justify-center mr-3 flex-shrink-0 mt-0.5">
                 <span className="text-red-800 text-xs">!</span>
@@ -660,7 +660,7 @@ Please check the browser console for more details.`)
         )}
 
         {successMessage && (
-          <div className="fixed bottom-6 left-6 z-50 bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg shadow-lg max-w-sm animate-in slide-in-from-left-5 fade-in-0">
+          <div className="fixed bottom-6 right-6 z-50 bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg shadow-lg max-w-sm animate-in slide-in-from-right-5 fade-in-0">
             <div className="flex items-start">
               <div className="w-5 h-5 bg-green-200 rounded-full flex items-center justify-center mr-3 flex-shrink-0 mt-0.5">
                 <span className="text-green-800 text-xs">✓</span>
