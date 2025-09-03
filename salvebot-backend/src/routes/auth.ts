@@ -275,9 +275,8 @@ authRouter.post('/resend-verification', zValidator('json', resendVerificationSch
 authRouter.post('/signin', zValidator('json', signinSchema), async (c) => {
   const { email, password } = c.req.valid('json')
   
-  const authService = new AuthService(c.env.JWT_SECRET)
-  
   try {
+    const authService = new AuthService(c.env.JWT_SECRET)
     // Get user
     const userData = await c.env.USERS.get(email)
     if (!userData) {
@@ -357,7 +356,8 @@ authRouter.post('/signin', zValidator('json', signinSchema), async (c) => {
     // Generate token
     const token = await authService.generateToken({ id: user.id, email: user.email })
 
-    return jsonResponse({
+    return c.json({
+      success: true,
       user: {
         id: user.id,
         email: user.email,
@@ -374,7 +374,10 @@ authRouter.post('/signin', zValidator('json', signinSchema), async (c) => {
     })
   } catch (error) {
     console.error('Signin error:', error)
-    return errorResponse('Failed to sign in', 500)
+    return c.json({
+      success: false,
+      message: 'Failed to sign in'
+    }, 500)
   }
 })
 
@@ -400,7 +403,8 @@ authRouter.get('/me', async (c) => {
 
     const user: User = JSON.parse(userData)
     
-    return jsonResponse({
+    return c.json({
+      success: true,
       user: {
         id: user.id,
         email: user.email,
