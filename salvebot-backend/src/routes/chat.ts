@@ -137,14 +137,27 @@ chatRouter.post('/:chatbotId', zValidator('json', chatMessageSchema), async (c) 
     const chunks = await getChatbotDocuments(chatbotId, c.env)
 
     if (chunks.length === 0) {
-      // No documents available, provide basic response
-      const basicResponse = `I'm sorry, but I don't have access to any information to help answer your question. Please contact support for assistance.`
-      
-      return jsonResponse({
-        response: basicResponse,
-        sessionId: sessionId || generateId(),
-        confidence: 0
-      })
+      // No documents available, provide helpful response with AI assistance
+      try {
+        // Generate a helpful response even without documents
+        const response = await ragService.generateBasicResponse(message, chatbot.settings)
+        
+        return jsonResponse({
+          response,
+          sessionId: sessionId || generateId(),
+          confidence: 0.3
+        })
+      } catch (error) {
+        console.error('Failed to generate basic response:', error)
+        // Fallback to static message
+        const basicResponse = `Hello! I'm the AI assistant for ${chatbot.domain}. I'm ready to help, but it looks like no knowledge documents have been uploaded yet. You can ask me general questions and I'll do my best to assist you!`
+        
+        return jsonResponse({
+          response: basicResponse,
+          sessionId: sessionId || generateId(),
+          confidence: 0.1
+        })
+      }
     }
 
     // Perform RAG query

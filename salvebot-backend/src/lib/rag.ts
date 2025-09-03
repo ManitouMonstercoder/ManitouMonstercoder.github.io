@@ -201,6 +201,34 @@ export class RAGService {
     return response.choices[0]?.message?.content || 'I apologize, but I cannot provide an answer at this time.'
   }
 
+  async generateBasicResponse(
+    message: string,
+    chatbotSettings?: { welcomeMessage?: string }
+  ): Promise<string> {
+    try {
+      const response = await this.openai.chat.completions.create({
+        model: 'gpt-4o-mini',
+        messages: [
+          {
+            role: 'system',
+            content: `You are a helpful AI assistant. The user is asking a question but no specific knowledge documents are available. Provide a helpful, friendly response that acknowledges the question and offers general assistance. Keep responses concise and professional. If you cannot provide specific information, be honest about it but still try to be helpful with general guidance.`
+          },
+          {
+            role: 'user',
+            content: message
+          }
+        ],
+        max_tokens: 200,
+        temperature: 0.7
+      })
+
+      return response.choices[0]?.message?.content || "I'm here to help! How can I assist you today?"
+    } catch (error) {
+      console.error('Failed to generate basic response:', error)
+      return "Hello! I'm here to help you. What can I do for you today?"
+    }
+  }
+
   async performRAGQuery(
     message: string,
     availableChunks: DocumentChunk[],
