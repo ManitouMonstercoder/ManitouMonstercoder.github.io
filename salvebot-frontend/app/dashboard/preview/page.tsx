@@ -198,14 +198,38 @@ export default function PreviewPage() {
 
     } catch (error: any) {
       console.error('Failed to send message:', error)
+      console.error('Error details:', {
+        message: error.message,
+        status: error.status,
+        response: error.response,
+        stack: error.stack
+      })
       
       // Show more specific error messages
-      if (error.message?.includes('403')) {
+      if (error.message?.includes('403') || error.status === 403) {
         addMessage('assistant', 'Sorry, this chatbot is not available for your domain. Please check your domain verification.')
-      } else if (error.message?.includes('500')) {
+      } else if (error.message?.includes('500') || error.status === 500) {
         addMessage('assistant', 'Sorry, I\'m experiencing technical difficulties. Please try again in a moment.')
+      } else if (error.message?.includes('Failed to fetch') || error.message?.includes('NetworkError') || error.message?.includes('ERR_NETWORK')) {
+        addMessage('assistant', `🔌 Backend Connection Error: The AI backend server is not reachable. This might be because:
+
+1. The backend server is not running
+2. The API URL (${process.env.NEXT_PUBLIC_API_URL || 'https://salvebot-api.fideleamazing.workers.dev'}) is incorrect
+3. CORS is blocking the request
+4. Network connectivity issues
+
+For testing: Please start the backend server or check the API configuration.
+
+Technical error: ${error.message}`)
       } else {
-        addMessage('assistant', 'Sorry, I\'m having trouble connecting right now. Please try again later.')
+        addMessage('assistant', `❌ Connection failed: ${error.message || 'Unknown error'}. 
+
+Debug info:
+- API URL: ${process.env.NEXT_PUBLIC_API_URL || 'https://salvebot-api.fideleamazing.workers.dev'}
+- Chatbot ID: ${chatbot?.id}
+- Domain: ${chatbot?.domain}
+
+Please check the browser console for more details.`)
       }
     } finally {
       setIsTyping(false)

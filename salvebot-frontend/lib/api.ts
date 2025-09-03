@@ -57,6 +57,8 @@ class ApiClient {
       }
     }
 
+    console.log('API Request:', { url, method: config.method || 'GET', headers: config.headers, body: config.body })
+
     try {
       const response = await fetch(url, config)
       const data = await response.json()
@@ -263,18 +265,43 @@ class ApiClient {
     return this.request(`/api/analytics?${params.toString()}`)
   }
 
-  // Chat API methods
+  // Chat API methods (public endpoint, no auth required)
   async sendChatMessage(chatbotId: string, message: string, sessionId?: string, domain?: string): Promise<any> {
     const currentDomain = domain || (typeof window !== 'undefined' ? window.location.hostname : 'localhost')
+    const url = `${this.baseUrl}/api/chat/${chatbotId}`
     
-    return this.request(`/api/chat/${chatbotId}`, {
+    const config: RequestInit = {
       method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify({
         message,
         sessionId,
         domain: currentDomain
       })
-    })
+    }
+
+    console.log('Chat API Request:', { url, headers: config.headers, body: config.body })
+
+    try {
+      const response = await fetch(url, config)
+      console.log('Chat API Response:', { status: response.status, statusText: response.statusText })
+      
+      if (!response.ok) {
+        const errorText = await response.text()
+        console.log('Chat API Error Response:', errorText)
+        throw new Error(`HTTP ${response.status}: ${errorText}`)
+      }
+
+      const data = await response.json()
+      console.log('Chat API Success:', data)
+      return data
+      
+    } catch (error) {
+      console.error('Chat API Error:', error)
+      throw error
+    }
   }
 }
 
