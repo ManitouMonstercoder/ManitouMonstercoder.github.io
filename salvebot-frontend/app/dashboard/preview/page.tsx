@@ -178,11 +178,12 @@ export default function PreviewPage() {
 
     try {
       // Send message to RAG-powered AI backend
+      // For preview mode, use the chatbot's configured domain instead of localhost
       const response = await api.sendChatMessage(
         chatbot.id, 
         userMessage, 
         conversationId || undefined,
-        chatbot.domain
+        chatbot.domain || 'preview-mode.salvebot.com'
       )
 
       if (response.response) {

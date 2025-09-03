@@ -282,14 +282,26 @@ class ApiClient {
       })
     }
 
-    console.log('Chat API Request:', { url, headers: config.headers, body: config.body })
+    console.log('Chat API Request:', { 
+      url, 
+      headers: config.headers, 
+      body: JSON.parse(config.body as string),
+      chatbotId,
+      domain: currentDomain 
+    })
 
     try {
       const response = await fetch(url, config)
       console.log('Chat API Response:', { status: response.status, statusText: response.statusText })
       
       if (!response.ok) {
-        const errorText = await response.text()
+        let errorText
+        try {
+          const errorJson = await response.json()
+          errorText = errorJson.message || errorJson.error || JSON.stringify(errorJson)
+        } catch {
+          errorText = await response.text()
+        }
         console.log('Chat API Error Response:', errorText)
         throw new Error(`HTTP ${response.status}: ${errorText}`)
       }
