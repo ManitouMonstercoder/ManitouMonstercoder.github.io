@@ -37,17 +37,29 @@ async function verifyChatbotAccess(
       return { allowed: false, reason: 'Chatbot is not active' }
     }
 
-    // Check domain verification
-    if (!chatbot.isVerified) {
-      return { allowed: false, reason: 'Domain not verified' }
-    }
-
-    // Verify domain matches
+    // Allow preview mode for testing (localhost, preview domains, etc.)
     const requestDomain = extractDomainFromUrl(domain)
-    const chatbotDomain = extractDomainFromUrl(chatbot.domain)
-    
-    if (requestDomain !== chatbotDomain) {
-      return { allowed: false, reason: 'Domain mismatch' }
+    const isPreviewMode = 
+      requestDomain === 'localhost' || 
+      requestDomain === '127.0.0.1' ||
+      domain.includes('preview-mode') ||
+      domain.includes('.vercel.app') ||
+      domain.includes('.netlify.app') ||
+      domain.includes('.github.io') ||
+      domain.includes('salvebot.com')
+
+    if (!isPreviewMode) {
+      // Check domain verification for production domains
+      if (!chatbot.isVerified) {
+        return { allowed: false, reason: 'Domain not verified' }
+      }
+
+      // Verify domain matches
+      const chatbotDomain = extractDomainFromUrl(chatbot.domain)
+      
+      if (requestDomain !== chatbotDomain) {
+        return { allowed: false, reason: 'Domain mismatch' }
+      }
     }
 
     // Check user subscription status

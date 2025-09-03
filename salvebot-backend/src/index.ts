@@ -6,6 +6,7 @@ import { authRouter } from './routes/auth'
 import { chatbotsRouter } from './routes/chatbots'
 import { chatRouter } from './routes/chat'
 import { documentsRouter } from './routes/documents'
+import { domainsRouter } from './routes/domains'
 import { corsHeaders, jsonResponse, errorResponse } from './lib/utils'
 
 const app = new Hono<{ Bindings: Env }>()
@@ -43,6 +44,7 @@ app.route('/api/auth', authRouter)
 app.route('/api/chatbots', chatbotsRouter)
 app.route('/api/chat', chatRouter)
 app.route('/api/documents', documentsRouter)
+app.route('/api/domains', domainsRouter)
 
 // Stripe webhooks
 app.post('/api/webhooks/stripe', async (c) => {
