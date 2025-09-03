@@ -260,23 +260,6 @@ export default function DomainsPage() {
             </div>
           ) : (
             <div className="space-y-6">
-              {error && (
-                <div className="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded-lg max-w-2xl mx-auto">
-                  <div className="flex items-center">
-                    <AlertCircleIcon className="h-5 w-5 mr-3 flex-shrink-0" />
-                    <span className="text-sm">{error}</span>
-                  </div>
-                </div>
-              )}
-
-              {successMessage && (
-                <div className="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg max-w-2xl mx-auto">
-                  <div className="flex items-center">
-                    <CheckCircle2Icon className="h-5 w-5 mr-3 flex-shrink-0" />
-                    <span className="text-sm">{successMessage}</span>
-                  </div>
-                </div>
-              )}
 
               {chatbots.length === 0 ? (
                 <div className="text-center py-12">
@@ -407,6 +390,43 @@ export default function DomainsPage() {
             </div>
           )}
         </main>
+
+        {/* Bottom-left notifications */}
+        {error && (
+          <div className="fixed bottom-6 left-6 z-50 bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg shadow-lg max-w-sm animate-in slide-in-from-left-5 fade-in-0">
+            <div className="flex items-start">
+              <AlertCircleIcon className="h-5 w-5 mr-3 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="text-sm font-medium">Error</p>
+                <p className="text-sm mt-1">{error}</p>
+              </div>
+              <button
+                onClick={() => setError('')}
+                className="ml-auto pl-3 text-red-400 hover:text-red-600"
+              >
+                <span className="text-lg leading-none">&times;</span>
+              </button>
+            </div>
+          </div>
+        )}
+
+        {successMessage && (
+          <div className="fixed bottom-6 left-6 z-50 bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg shadow-lg max-w-sm animate-in slide-in-from-left-5 fade-in-0">
+            <div className="flex items-start">
+              <CheckCircle2Icon className="h-5 w-5 mr-3 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="text-sm font-medium">Success</p>
+                <p className="text-sm mt-1">{successMessage}</p>
+              </div>
+              <button
+                onClick={() => setSuccessMessage('')}
+                className="ml-auto pl-3 text-green-400 hover:text-green-600"
+              >
+                <span className="text-lg leading-none">&times;</span>
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </AuthGuard>
   )
