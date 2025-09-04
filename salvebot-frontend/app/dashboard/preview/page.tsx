@@ -38,10 +38,8 @@ export default function PreviewPage() {
   const [successMessage, setSuccessMessage] = useState('')
   const [showWidget, setShowWidget] = useState(true)
   const [zoomLevel, setZoomLevel] = useState(1)
-  const [widgetOpen, setWidgetOpen] = useState(false)
-  const [messages, setMessages] = useState<Array<{ role: 'user' | 'assistant', content: string }>>([])
-  const [conversationId, setConversationId] = useState<string | null>(null)
-  const [isTyping, setIsTyping] = useState(false)
+  const [widgetLoaded, setWidgetLoaded] = useState(false)
+  const widgetContainerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (chatbotId) {
@@ -57,6 +55,11 @@ export default function PreviewPage() {
       if (response.chatbot?.domain) {
         await captureScreenshot(response.chatbot.domain)
       }
+      
+      // Load the real widget after chatbot data is loaded
+      setTimeout(() => {
+        loadRealWidget()
+      }, 1000)
     } catch (error) {
       console.error('Failed to load chatbot:', error)
       setError('Failed to load chatbot details')
@@ -149,32 +152,52 @@ export default function PreviewPage() {
     }
   }
 
-  const toggleWidget = () => {
-    if (widgetOpen) {
-      // Reset conversation when closing widget
-      setWidgetOpen(false)
-      setMessages([])
-      setConversationId(null)
-      setIsTyping(false)
-    } else {
-      // Open widget and add welcome message
-      setWidgetOpen(true)
-      setMessages([{
-        role: 'assistant',
-        content: chatbot?.settings?.welcomeMessage || chatbot?.welcomeMessage || 'Hello! How can I help you today?'
-      }])
+
+  // Load the real widget script
+  const loadRealWidget = () => {
+    if (!chatbot?.id || widgetLoaded) return
+
+    // Remove any existing widget
+    const existingWidget = document.getElementById('salvebot-widget')
+    if (existingWidget) {
+      existingWidget.remove()
     }
+
+    // Create and load the widget script
+    const script = document.createElement('script')
+    script.src = 'https://salvebot-api.fideleamazing.workers.dev/api/chat/widget.js'
+    script.async = true
+    script.setAttribute('data-chatbot-id', chatbot.id)
+    script.setAttribute('data-domain', chatbot.domain)
+    
+    script.onload = () => {
+      setWidgetLoaded(true)
+      // Move the widget into our container after it loads
+      setTimeout(() => {
+        const widget = document.getElementById('salvebot-widget')
+        if (widget && widgetContainerRef.current) {
+          widgetContainerRef.current.appendChild(widget)
+          // Override positioning for preview
+          widget.style.position = 'relative'
+          widget.style.bottom = 'auto'
+          widget.style.right = 'auto'
+          widget.style.zIndex = '1'
+        }
+      }, 100)
+    }
+
+    script.onerror = () => {
+      setError('Failed to load chatbot widget')
+    }
+
+    document.head.appendChild(script)
   }
 
-  const addMessage = (role: 'user' | 'assistant', content: string) => {
-    setMessages(prev => [...prev, { role, content }])
-  }
-
+  // Real widget handles all messaging now
   const handleTestMessage = async (userMessage: string) => {
-    if (!chatbot?.id) return
-
-    addMessage('user', userMessage)
-    setIsTyping(true)
+    // This function is no longer used - the real widget handles messaging
+    console.log('Real widget should handle:', userMessage)
+    // setIsTyping(true)
 
     try {
       // Send message to RAG-powered AI backend
@@ -182,19 +205,19 @@ export default function PreviewPage() {
       const response = await api.sendChatMessage(
         chatbot.id, 
         userMessage, 
-        conversationId || undefined,
+        // conversationId || undefined,
         chatbot.domain || 'preview-mode.salvebot.com'
       )
 
       if (response.response) {
-        addMessage('assistant', response.response)
+        // addMessage('assistant', response.response)
         
         // Update session ID from backend
         if (response.sessionId) {
-          setConversationId(response.sessionId)
+          // setConversationId(response.sessionId) - not needed for real widget
         }
       } else {
-        addMessage('assistant', 'Sorry, I encountered an issue processing your message. Please try again.')
+        // addMessage('assistant', 'Sorry, I encountered an issue processing your message. Please try again.')
       }
 
     } catch (error: any) {
@@ -208,32 +231,16 @@ export default function PreviewPage() {
       
       // Show more specific error messages
       if (error.message?.includes('403') || error.status === 403) {
-        addMessage('assistant', 'Sorry, this chatbot is not available for your domain. Please check your domain verification.')
+        // addMessage('assistant', 'Sorry, this chatbot is not available for your domain. Please check your domain verification.')
       } else if (error.message?.includes('500') || error.status === 500) {
-        addMessage('assistant', 'Sorry, I\'m experiencing technical difficulties. Please try again in a moment.')
+        // addMessage('assistant', 'Sorry, I\'m experiencing technical difficulties. Please try again in a moment.')
       } else if (error.message?.includes('Failed to fetch') || error.message?.includes('NetworkError') || error.message?.includes('ERR_NETWORK')) {
-        addMessage('assistant', `🔌 Backend Connection Error: The AI backend server is not reachable. This might be because:
-
-1. The backend server is not running
-2. The API URL (${process.env.NEXT_PUBLIC_API_URL || 'https://salvebot-api.fideleamazing.workers.dev'}) is incorrect
-3. CORS is blocking the request
-4. Network connectivity issues
-
-For testing: Please start the backend server or check the API configuration.
-
-Technical error: ${error.message}`)
+        console.log('Network error:', error)
       } else {
-        addMessage('assistant', `❌ Connection failed: ${error.message || 'Unknown error'}. 
-
-Debug info:
-- API URL: ${process.env.NEXT_PUBLIC_API_URL || 'https://salvebot-api.fideleamazing.workers.dev'}
-- Chatbot ID: ${chatbot?.id}
-- Domain: ${chatbot?.domain}
-
-Please check the browser console for more details.`)
+        console.log('Other error:', error)
       }
     } finally {
-      setIsTyping(false)
+      // setIsTyping(false) - not needed since real widget handles this
     }
   }
 
@@ -427,10 +434,11 @@ Please check the browser console for more details.`)
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={toggleWidget}
+                          onClick={() => loadRealWidget()}
                           className="w-full btn-hover"
+                          disabled={widgetLoaded}
                         >
-                          {widgetOpen ? 'Close Chat' : 'Open Chat'}
+                          {widgetLoaded ? 'Widget Loaded' : 'Load Widget'}
                         </Button>
                         <p className="text-xs text-muted-foreground">
                           Click to test the chat experience
@@ -498,104 +506,11 @@ Please check the browser console for more details.`)
                   {/* Chatbot Widget Overlay */}
                   {showWidget && chatbot && (
                     <div className={`absolute ${getWidgetPosition()} z-10`}>
-                      <div className="font-sans">
-                        {/* Widget Button */}
-                        <div 
-                          className={`w-14 h-14 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full cursor-pointer flex items-center justify-center shadow-lg hover:scale-110 transition-transform ${getWidgetTheme()}`}
-                          onClick={toggleWidget}
-                        >
-                          {widgetOpen ? (
-                            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                          ) : (
-                            <span className="text-2xl">{getWidgetAvatar()}</span>
-                          )}
-                        </div>
-
-                        {/* Chat Window */}
-                        {widgetOpen && (
-                          <div className={`absolute ${getChatWindowPosition(chatbot?.settings?.position || chatbot?.position || 'bottom-right')} w-80 h-96 bg-white rounded-2xl shadow-2xl border overflow-hidden ${getWidgetTheme()}`}>
-                            {/* Header */}
-                            <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-4">
-                              <div className="flex items-center justify-between">
-                                <div className="flex items-center space-x-2">
-                                  <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                                  <span className="font-medium">AI Assistant</span>
-                                </div>
-                                <button onClick={toggleWidget} className="text-white/80 hover:text-white">
-                                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                  </svg>
-                                </button>
-                              </div>
-                            </div>
-
-                            {/* Messages */}
-                            <div className="flex-1 p-4 space-y-3 overflow-y-auto h-64 bg-gray-50">
-                              {messages.map((message, index) => (
-                                <div key={index} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                                  <div className={`max-w-xs px-3 py-2 rounded-lg text-sm ${
-                                    message.role === 'user'
-                                      ? 'bg-blue-500 text-white'
-                                      : 'bg-white text-gray-800 shadow-sm border'
-                                  }`}>
-                                    {message.content}
-                                  </div>
-                                </div>
-                              ))}
-                              
-                              {/* Typing Indicator */}
-                              {isTyping && (
-                                <div className="flex justify-start">
-                                  <div className="bg-white text-gray-800 shadow-sm border px-3 py-2 rounded-lg text-sm">
-                                    <div className="flex space-x-1">
-                                      <div className="flex space-x-1">
-                                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              )}
-                            </div>
-
-                            {/* Input */}
-                            <div className="p-3 border-t bg-white">
-                              <div className="flex space-x-2">
-                                <input
-                                  type="text"
-                                  placeholder={isTyping ? "AI is typing..." : "Type your message..."}
-                                  disabled={isTyping}
-                                  className={`flex-1 px-3 py-2 border rounded-lg text-sm text-black focus:outline-none focus:ring-2 focus:ring-blue-500 ${isTyping ? 'opacity-50 cursor-not-allowed' : ''}`}
-                                  onKeyDown={(e) => {
-                                    if (e.key === 'Enter' && !isTyping) {
-                                      const target = e.target as HTMLInputElement
-                                      if (target.value.trim()) {
-                                        handleTestMessage(target.value)
-                                        target.value = ''
-                                      }
-                                    }
-                                  }}
-                                />
-                                <button 
-                                  className={`px-4 py-2 bg-blue-500 text-white rounded-lg text-sm hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed`}
-                                  disabled={isTyping}
-                                  onClick={() => {
-                                    if (!isTyping) {
-                                      const input = document.querySelector('input[type="text"]') as HTMLInputElement
-                                      if (input?.value.trim()) {
-                                        handleTestMessage(input.value)
-                                        input.value = ''
-                                      }
-                                    }
-                                  }}
-                                >
-                                  {isTyping ? '...' : 'Send'}
-                                </button>
-                              </div>
-                            </div>
+                      {/* Real Widget Container */}
+                      <div ref={widgetContainerRef} className="font-sans">
+                        {!widgetLoaded && (
+                          <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center shadow-lg animate-pulse">
+                            <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                           </div>
                         )}
                       </div>
