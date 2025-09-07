@@ -175,7 +175,22 @@ export default function PreviewPage() {
     
     script.onload = () => {
       console.log('Widget script loaded successfully')
-      setWidgetLoaded(true)
+      
+      // Try to manually trigger widget creation if it doesn't happen automatically
+      setTimeout(() => {
+        const widget = document.getElementById('salvebot-widget')
+        if (!widget) {
+          console.log('Widget not found, attempting manual initialization')
+          // Try to call the widget creation function if it's available globally
+          try {
+            if (typeof (window as any).createWidget === 'function') {
+              (window as any).createWidget()
+            }
+          } catch (err) {
+            console.log('Manual widget creation failed:', err)
+          }
+        }
+      }, 100)
       
       // Give the widget time to initialize and attach to DOM
       const checkWidget = (attempts = 0) => {
@@ -184,6 +199,7 @@ export default function PreviewPage() {
         
         if (widget && widgetContainerRef.current) {
           console.log('Widget found, moving to preview container')
+          setWidgetLoaded(true)
           try {
             // Move the widget into our container
             widgetContainerRef.current.appendChild(widget)
@@ -204,7 +220,10 @@ export default function PreviewPage() {
           setTimeout(() => checkWidget(attempts + 1), 200)
         } else {
           console.error('Widget not found after 20 attempts')
-          setError('Widget failed to initialize - check browser console for details')
+          console.log('Available scripts in document:', document.scripts.length)
+          console.log('Document readyState:', document.readyState)
+          setError(`Widget failed to initialize. Script loaded but widget element not created. Check if chatbot ID '${chatbot.id}' is valid.`)
+          setWidgetLoaded(true) // Stop the spinner even if failed
         }
       }
       
