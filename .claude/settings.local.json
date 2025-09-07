@@ -33,7 +33,8 @@
       "WebFetch(domain:salvebot.com)",
       "WebFetch(domain:nextjs.org)",
       "Bash(find:*)",
-      "Bash(wrangler secret:*)"
+      "Bash(wrangler secret:*)",
+      "Read(/C:\\salvebot\\salvebot-frontend\\app\\dashboard\\preview/**)"
     ],
     "deny": [],
     "additionalDirectories": [

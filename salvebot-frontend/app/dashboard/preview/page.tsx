@@ -153,13 +153,16 @@ export default function PreviewPage() {
   }
 
 
-  // Load the real widget script
+  // Load the real widget script with improved debugging
   const loadRealWidget = () => {
     if (!chatbot?.id || widgetLoaded) return
+
+    console.log('Loading widget for chatbot:', chatbot.id, 'domain:', chatbot.domain)
 
     // Remove any existing widget
     const existingWidget = document.getElementById('salvebot-widget')
     if (existingWidget) {
+      console.log('Removing existing widget')
       existingWidget.remove()
     }
 
@@ -171,25 +174,50 @@ export default function PreviewPage() {
     script.setAttribute('data-domain', chatbot.domain)
     
     script.onload = () => {
+      console.log('Widget script loaded successfully')
       setWidgetLoaded(true)
-      // Move the widget into our container after it loads
-      setTimeout(() => {
+      
+      // Give the widget time to initialize and attach to DOM
+      const checkWidget = (attempts = 0) => {
         const widget = document.getElementById('salvebot-widget')
+        console.log(`Checking for widget, attempt ${attempts + 1}, found:`, !!widget)
+        
         if (widget && widgetContainerRef.current) {
-          widgetContainerRef.current.appendChild(widget)
-          // Override positioning for preview
-          widget.style.position = 'relative'
-          widget.style.bottom = 'auto'
-          widget.style.right = 'auto'
-          widget.style.zIndex = '1'
+          console.log('Widget found, moving to preview container')
+          try {
+            // Move the widget into our container
+            widgetContainerRef.current.appendChild(widget)
+            
+            // Override positioning for preview
+            widget.style.position = 'relative'
+            widget.style.bottom = 'auto'
+            widget.style.right = 'auto'
+            widget.style.zIndex = '1'
+            
+            console.log('Widget successfully moved to preview container')
+          } catch (err) {
+            console.error('Error moving widget:', err)
+            setError('Failed to position widget in preview')
+          }
+        } else if (attempts < 20) {
+          // Keep trying for up to 4 seconds
+          setTimeout(() => checkWidget(attempts + 1), 200)
+        } else {
+          console.error('Widget not found after 20 attempts')
+          setError('Widget failed to initialize - check browser console for details')
         }
-      }, 100)
+      }
+      
+      checkWidget()
     }
 
-    script.onerror = () => {
-      setError('Failed to load chatbot widget')
+    script.onerror = (err) => {
+      console.error('Failed to load widget script:', err)
+      setError('Failed to load chatbot widget script')
+      setWidgetLoaded(false)
     }
 
+    console.log('Appending widget script to document head')
     document.head.appendChild(script)
   }
 
@@ -508,9 +536,20 @@ export default function PreviewPage() {
                     <div className={`absolute ${getWidgetPosition()} z-10`}>
                       {/* Real Widget Container */}
                       <div ref={widgetContainerRef} className="font-sans">
-                        {!widgetLoaded && (
+                        {!widgetLoaded && !error && (
                           <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center shadow-lg animate-pulse">
                             <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                          </div>
+                        )}
+                        {error && (
+                          <div className="w-14 h-14 bg-red-500 rounded-full flex items-center justify-center shadow-lg cursor-pointer" onClick={() => {
+                            setError('')
+                            setWidgetLoaded(false)
+                            setTimeout(() => loadRealWidget(), 100)
+                          }}>
+                            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                            </svg>
                           </div>
                         )}
                       </div>
