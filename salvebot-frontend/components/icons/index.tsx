@@ -496,3 +496,87 @@ export const BellIcon: React.FC<IconProps> = ({ className = "h-5 w-5", size }) =
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.73 21a2 2 0 01-3.46 0" />
   </svg>
 )
+
+// ArrowDown Icon
+export const ArrowDownIcon: React.FC<IconProps> = ({ className = "h-5 w-5", size }) => (
+  <svg 
+    className={className} 
+    width={size} 
+    height={size}
+    fill="none" 
+    stroke="currentColor" 
+    viewBox="0 0 24 24"
+  >
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+  </svg>
+)
+
+// SendHorizontal Icon
+export const SendHorizontalIcon: React.FC<IconProps> = ({ className = "h-5 w-5", size }) => (
+  <svg 
+    className={className} 
+    width={size} 
+    height={size}
+    fill="none" 
+    stroke="currentColor" 
+    viewBox="0 0 24 24"
+  >
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3l18 9-18 9v-7l13-2L3 10V3z" />
+  </svg>
+)
+
+// Pencil Icon
+export const PencilIcon: React.FC<IconProps> = ({ className = "h-5 w-5", size }) => (
+  <svg 
+    className={className} 
+    width={size} 
+    height={size}
+    fill="none" 
+    stroke="currentColor" 
+    viewBox="0 0 24 24"
+  >
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+  </svg>
+)
+
+// Check Icon
+export const CheckIcon: React.FC<IconProps> = ({ className = "h-5 w-5", size }) => (
+  <svg 
+    className={className} 
+    width={size} 
+    height={size}
+    fill="none" 
+    stroke="currentColor" 
+    viewBox="0 0 24 24"
+  >
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+  </svg>
+)
+
+// ChevronLeft Icon
+export const ChevronLeftIcon: React.FC<IconProps> = ({ className = "h-5 w-5", size }) => (
+  <svg 
+    className={className} 
+    width={size} 
+    height={size}
+    fill="none" 
+    stroke="currentColor" 
+    viewBox="0 0 24 24"
+  >
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 18l-6-6 6-6" />
+  </svg>
+)
+
+// ChevronRight Icon
+export const ChevronRightIcon: React.FC<IconProps> = ({ className = "h-5 w-5", size }) => (
+  <svg 
+    className={className} 
+    width={size} 
+    height={size}
+    fill="none" 
+    stroke="currentColor" 
+    viewBox="0 0 24 24"
+  >
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 18l6-6-6-6" />
+  </svg>
+)

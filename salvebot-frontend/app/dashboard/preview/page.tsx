@@ -7,6 +7,9 @@ import { Button } from '@/components/ui/button'
 import { AuthGuard } from '@/components/auth/AuthGuard'
 import { ArrowLeftIcon, CopyIcon } from '@/components/icons'
 import { api } from '@/lib/api'
+import { AssistantRuntimeProvider } from "@assistant-ui/react"
+import { Thread } from "@/components/assistant-ui/thread"
+import { useRAGRuntime } from "@/hooks/use-rag-runtime"
 
 interface Chatbot {
   id: string
@@ -20,6 +23,32 @@ interface Chatbot {
     theme?: string
     position?: string
   }
+}
+
+function ChatInterface({ chatbot }: { chatbot: Chatbot }) {
+  const runtime = useRAGRuntime({
+    chatbotId: chatbot.id,
+    domain: chatbot.domain,
+  });
+
+  if (!runtime) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-muted-foreground">Initializing chat...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <AssistantRuntimeProvider runtime={runtime}>
+      <div className="h-[600px] border border-border/50 rounded-xl overflow-hidden bg-card">
+        <Thread />
+      </div>
+    </AssistantRuntimeProvider>
+  );
 }
 
 export default function PreviewPage() {
@@ -41,31 +70,12 @@ export default function PreviewPage() {
     try {
       const response = await api.getChatbot(chatbotId!)
       setChatbot(response.chatbot)
-      
-      // Load the widget immediately
-      loadWidget()
     } catch (error: any) {
       console.error('Failed to load chatbot:', error)
       setError('Failed to load chatbot: ' + (error.message || 'Unknown error'))
     } finally {
       setIsLoading(false)
     }
-  }
-
-  const loadWidget = () => {
-    if (!chatbot?.id) return
-
-    // Clean up any existing widget
-    const existing = document.getElementById('salvebot-widget')
-    if (existing) existing.remove()
-
-    // Create script element
-    const script = document.createElement('script')
-    script.src = 'https://salvebot-api.fideleamazing.workers.dev/api/chat/widget.js'
-    script.setAttribute('data-chatbot-id', chatbot.id)
-    script.setAttribute('data-domain', chatbot.domain)
-
-    document.head.appendChild(script)
   }
 
   const copyToClipboard = async (text: string) => {
@@ -109,7 +119,7 @@ export default function PreviewPage() {
                   Back to Dashboard
                 </Link>
                 <div className="h-6 w-px bg-border" />
-                <h1 className="text-2xl font-bold">Chatbot Test</h1>
+                <h1 className="text-2xl font-bold">Test Your Chatbot</h1>
               </div>
             </div>
           </div>
@@ -160,16 +170,16 @@ export default function PreviewPage() {
                 </div>
               )}
 
-              {/* Test Instructions */}
-              <div className="bg-card p-6 rounded-xl border border-border/50 shadow-sm">
-                <h3 className="font-semibold mb-4">Test Your Chatbot</h3>
-                <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                  <p className="text-sm text-blue-800">
-                    Look for the chat button in the bottom-right corner of your screen. 
-                    Click it to test the AI conversation with real responses from your RAG system.
+              {/* Chat Interface */}
+              {chatbot && (
+                <div className="bg-card p-6 rounded-xl border border-border/50 shadow-sm">
+                  <h3 className="font-semibold mb-4">Live Chat Test</h3>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Test your RAG-powered chatbot below. This uses your production backend and knowledge base.
                   </p>
+                  <ChatInterface chatbot={chatbot} />
                 </div>
-              </div>
+              )}
 
               {/* Embed Code */}
               {chatbot && (
@@ -198,9 +208,9 @@ export default function PreviewPage() {
           )}
         </main>
 
-        {/* Bottom-right notifications */}
+        {/* Error/Success Messages */}
         {error && (
-          <div className="fixed bottom-6 right-6 z-50 bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg shadow-lg max-w-sm animate-in slide-in-from-right-5 fade-in-0">
+          <div className="fixed bottom-6 right-6 z-50 bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg shadow-lg max-w-sm">
             <div className="flex items-start">
               <div className="flex-1">
                 <p className="text-sm font-medium">Error</p>
@@ -217,7 +227,7 @@ export default function PreviewPage() {
         )}
 
         {successMessage && (
-          <div className="fixed bottom-6 right-6 z-50 bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg shadow-lg max-w-sm animate-in slide-in-from-right-5 fade-in-0">
+          <div className="fixed bottom-6 right-6 z-50 bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg shadow-lg max-w-sm">
             <div className="flex items-start">
               <div className="flex-1">
                 <p className="text-sm font-medium">Success</p>
