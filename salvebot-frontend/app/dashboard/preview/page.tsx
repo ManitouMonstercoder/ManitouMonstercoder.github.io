@@ -30,7 +30,6 @@ export default function PreviewPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
   const [successMessage, setSuccessMessage] = useState('')
-  const [widgetLoaded, setWidgetLoaded] = useState(false)
 
   useEffect(() => {
     if (chatbotId) {
@@ -42,12 +41,9 @@ export default function PreviewPage() {
     try {
       const response = await api.getChatbot(chatbotId!)
       setChatbot(response.chatbot)
-      setSuccessMessage('Chatbot loaded successfully!')
       
-      // Load the widget after chatbot data is loaded
-      setTimeout(() => {
-        loadWidget()
-      }, 500)
+      // Load the widget immediately
+      loadWidget()
     } catch (error: any) {
       console.error('Failed to load chatbot:', error)
       setError('Failed to load chatbot: ' + (error.message || 'Unknown error'))
@@ -57,10 +53,8 @@ export default function PreviewPage() {
   }
 
   const loadWidget = () => {
-    if (!chatbot?.id || widgetLoaded) return
+    if (!chatbot?.id) return
 
-    console.log('Loading widget for:', chatbot.id)
-    
     // Clean up any existing widget
     const existing = document.getElementById('salvebot-widget')
     if (existing) existing.remove()
@@ -70,18 +64,6 @@ export default function PreviewPage() {
     script.src = 'https://salvebot-api.fideleamazing.workers.dev/api/chat/widget.js'
     script.setAttribute('data-chatbot-id', chatbot.id)
     script.setAttribute('data-domain', chatbot.domain)
-    
-    script.onload = () => {
-      console.log('Widget script loaded')
-      setWidgetLoaded(true)
-      setSuccessMessage('Widget loaded! Click the chat button to test.')
-    }
-    
-    script.onerror = () => {
-      console.error('Widget failed to load')
-      setError('Widget failed to load. Check console for details.')
-      setWidgetLoaded(true)
-    }
 
     document.head.appendChild(script)
   }
@@ -178,28 +160,14 @@ export default function PreviewPage() {
                 </div>
               )}
 
-              {/* Widget Status */}
+              {/* Test Instructions */}
               <div className="bg-card p-6 rounded-xl border border-border/50 shadow-sm">
-                <h3 className="font-semibold mb-4">Widget Test</h3>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between p-4 bg-muted/50 rounded-lg">
-                    <div>
-                      <p className="font-medium">Widget Status</p>
-                      <p className="text-sm text-muted-foreground">
-                        {widgetLoaded ? 'Widget is loaded and ready' : 'Loading widget...'}
-                      </p>
-                    </div>
-                    <div className={`w-3 h-3 rounded-full ${widgetLoaded ? 'bg-green-500' : 'bg-yellow-500 animate-pulse'}`} />
-                  </div>
-                  
-                  {widgetLoaded && (
-                    <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                      <p className="text-sm text-blue-800">
-                        <strong>Widget loaded successfully!</strong> Look for the chat button in the bottom-right corner of your screen. 
-                        Click it to test the AI conversation with real responses from your backend.
-                      </p>
-                    </div>
-                  )}
+                <h3 className="font-semibold mb-4">Test Your Chatbot</h3>
+                <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                  <p className="text-sm text-blue-800">
+                    Look for the chat button in the bottom-right corner of your screen. 
+                    Click it to test the AI conversation with real responses from your RAG system.
+                  </p>
                 </div>
               </div>
 
