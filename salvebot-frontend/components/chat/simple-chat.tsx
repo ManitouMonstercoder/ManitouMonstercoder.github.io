@@ -53,29 +53,32 @@ export function SimpleChat({ chatbotId, domain, className = "" }: SimpleChatProp
     setIsLoading(true)
 
     try {
-      console.log('Sending message to API:', userMessage.content)
+      console.log('Sending message directly to RAG backend:', userMessage.content)
       
-      const response = await fetch(`/api/chat-simple?chatbotId=${encodeURIComponent(chatbotId)}&domain=${encodeURIComponent(domain)}`, {
+      // Call RAG backend directly
+      const response = await fetch('https://salvebot-api.fideleamazing.workers.dev/api/chat/message', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          messages: [...messages, userMessage].map(m => ({ role: m.role, content: m.content })),
+          chatbotId: chatbotId,
+          message: userMessage.content,
+          domain: domain,
         }),
       })
 
-      console.log('API response status:', response.status)
+      console.log('RAG backend response status:', response.status)
 
       if (!response.ok) {
         const errorText = await response.text()
-        console.error('API error response:', errorText)
+        console.error('RAG backend error response:', errorText)
         throw new Error(`HTTP ${response.status}: ${response.statusText}`)
       }
 
       // Handle JSON response
       const data = await response.json()
-      console.log('API response data:', data)
+      console.log('RAG backend response data:', data)
 
       const assistantMessage: Message = {
         role: 'assistant',
