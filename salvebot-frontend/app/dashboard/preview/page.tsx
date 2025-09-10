@@ -7,9 +7,7 @@ import { Button } from '@/components/ui/button'
 import { AuthGuard } from '@/components/auth/AuthGuard'
 import { ArrowLeftIcon, CopyIcon } from '@/components/icons'
 import { api } from '@/lib/api'
-import { useChatRuntime } from "@assistant-ui/react-ai-sdk"
-import { AssistantRuntimeProvider } from "@assistant-ui/react"
-import { Thread } from "@/components/assistant-ui/thread"
+import { SimpleChat } from "@/components/chat/simple-chat"
 
 interface Chatbot {
   id: string
@@ -26,21 +24,14 @@ interface Chatbot {
 }
 
 function ChatInterface({ chatbot }: { chatbot: Chatbot }) {
-  // Simple approach - just use the default useChatRuntime which calls /api/chat
-  const runtime = useChatRuntime();
-
-  // Store chatbot info in localStorage for the API to access
-  useEffect(() => {
-    localStorage.setItem('current-chatbot-id', chatbot.id);
-    localStorage.setItem('current-chatbot-domain', chatbot.domain);
-  }, [chatbot.id, chatbot.domain]);
-
   return (
-    <AssistantRuntimeProvider runtime={runtime}>
-      <div className="h-[600px] border border-border/50 rounded-xl overflow-hidden bg-card">
-        <Thread />
-      </div>
-    </AssistantRuntimeProvider>
+    <div className="h-[600px] border border-border/50 rounded-xl overflow-hidden bg-card">
+      <SimpleChat 
+        chatbotId={chatbot.id}
+        domain={chatbot.domain}
+        className="h-full"
+      />
+    </div>
   );
 }
 
