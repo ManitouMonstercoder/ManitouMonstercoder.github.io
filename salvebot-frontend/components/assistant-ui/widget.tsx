@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { AssistantRuntimeProvider } from "@assistant-ui/react"
 import { Thread } from "./thread"
-import { useRAGRuntime } from "@/hooks/use-rag-runtime"
+import { useChatRuntime } from "@assistant-ui/react-ai-sdk"
 import { Button } from '@/components/ui/button'
 import { XIcon } from '@/components/icons'
 
@@ -40,10 +40,7 @@ export function ChatWidget({
   const [isOpen, setIsOpen] = useState(false)
   const [isLoaded, setIsLoaded] = useState(false)
 
-  const runtime = useRAGRuntime({
-    chatbotId,
-    domain,
-  })
+  const runtime = useChatRuntime()
 
   useEffect(() => {
     // Mark widget as loaded once runtime is ready

@@ -7,9 +7,9 @@ import { Button } from '@/components/ui/button'
 import { AuthGuard } from '@/components/auth/AuthGuard'
 import { ArrowLeftIcon, CopyIcon } from '@/components/icons'
 import { api } from '@/lib/api'
+import { useChatRuntime } from "@assistant-ui/react-ai-sdk"
 import { AssistantRuntimeProvider } from "@assistant-ui/react"
 import { Thread } from "@/components/assistant-ui/thread"
-import { useRAGRuntime } from "@/hooks/use-rag-runtime"
 
 interface Chatbot {
   id: string
@@ -26,21 +26,14 @@ interface Chatbot {
 }
 
 function ChatInterface({ chatbot }: { chatbot: Chatbot }) {
-  const runtime = useRAGRuntime({
-    chatbotId: chatbot.id,
-    domain: chatbot.domain,
-  });
+  // Simple approach - just use the default useChatRuntime which calls /api/chat
+  const runtime = useChatRuntime();
 
-  if (!runtime) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-center">
-          <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-muted-foreground">Initializing chat...</p>
-        </div>
-      </div>
-    );
-  }
+  // Store chatbot info in localStorage for the API to access
+  useEffect(() => {
+    localStorage.setItem('current-chatbot-id', chatbot.id);
+    localStorage.setItem('current-chatbot-domain', chatbot.domain);
+  }, [chatbot.id, chatbot.domain]);
 
   return (
     <AssistantRuntimeProvider runtime={runtime}>
