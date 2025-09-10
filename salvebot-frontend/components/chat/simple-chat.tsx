@@ -55,7 +55,7 @@ export function SimpleChat({ chatbotId, domain, className = "" }: SimpleChatProp
     try {
       console.log('Sending message to API:', userMessage.content)
       
-      const response = await fetch(`/api/chat?chatbotId=${encodeURIComponent(chatbotId)}&domain=${encodeURIComponent(domain)}`, {
+      const response = await fetch(`/api/chat-simple?chatbotId=${encodeURIComponent(chatbotId)}&domain=${encodeURIComponent(domain)}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -68,31 +68,23 @@ export function SimpleChat({ chatbotId, domain, className = "" }: SimpleChatProp
       console.log('API response status:', response.status)
 
       if (!response.ok) {
+        const errorText = await response.text()
+        console.error('API error response:', errorText)
         throw new Error(`HTTP ${response.status}: ${response.statusText}`)
       }
 
-      // Handle streaming response
-      const reader = response.body?.getReader()
-      if (reader) {
-        let assistantContent = ''
-        
-        while (true) {
-          const { done, value } = await reader.read()
-          if (done) break
-          
-          const chunk = new TextDecoder().decode(value)
-          assistantContent += chunk
-        }
+      // Handle JSON response
+      const data = await response.json()
+      console.log('API response data:', data)
 
-        const assistantMessage: Message = {
-          role: 'assistant',
-          content: assistantContent.trim() || 'I received your message but had trouble generating a response.',
-          timestamp: new Date()
-        }
-
-        setMessages(prev => [...prev, assistantMessage])
-        console.log('Assistant response:', assistantMessage.content)
+      const assistantMessage: Message = {
+        role: 'assistant',
+        content: data.response || 'I received your message but had trouble generating a response.',
+        timestamp: new Date()
       }
+
+      setMessages(prev => [...prev, assistantMessage])
+      console.log('Assistant response:', assistantMessage.content)
     } catch (error) {
       console.error('Chat error:', error)
       

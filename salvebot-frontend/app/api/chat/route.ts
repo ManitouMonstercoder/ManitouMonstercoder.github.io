@@ -3,6 +3,21 @@ import { openai } from "@ai-sdk/openai";
 
 export const maxDuration = 30;
 
+// Add CORS headers for all responses
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+};
+
+// Handle preflight requests
+export async function OPTIONS() {
+  return new Response(null, {
+    status: 200,
+    headers: corsHeaders,
+  });
+}
+
 // Check if OpenAI API key is configured
 if (!process.env.OPENAI_API_KEY) {
   console.warn('OPENAI_API_KEY not found in environment variables');
@@ -35,7 +50,12 @@ async function sendToRAGBackend(
 }
 
 export async function POST(req: Request) {
+  console.log('POST /api/chat called');
+  
   try {
+    console.log('Request method:', req.method);
+    console.log('Request URL:', req.url);
+    
     const body = await req.json();
     const { messages } = body;
     
@@ -113,6 +133,7 @@ export async function POST(req: Request) {
           headers: {
             'Content-Type': 'text/plain; charset=utf-8',
             'X-Session-ID': ragResponse.sessionId || 'test-session',
+            ...corsHeaders,
           },
         });
       }
@@ -131,6 +152,7 @@ export async function POST(req: Request) {
       return result.toTextStreamResponse({
         headers: {
           'X-Session-ID': ragResponse.sessionId,
+          ...corsHeaders,
         },
       });
 
@@ -151,12 +173,29 @@ export async function POST(req: Request) {
         headers: {
           'Content-Type': 'text/plain; charset=utf-8',
           'X-Fallback': 'true',
+          ...corsHeaders,
         },
       });
     }
 
   } catch (error: any) {
     console.error('Chat API Error:', error);
-    return new Response(`Error: ${error.message}`, { status: 500 });
+    return new Response(`Error: ${error.message}`, { 
+      status: 500,
+      headers: corsHeaders,
+    });
   }
+}
+
+// Also export a simple GET for testing
+export async function GET() {
+  return new Response(JSON.stringify({ 
+    message: 'Chat API is working',
+    timestamp: new Date().toISOString() 
+  }), {
+    headers: {
+      'Content-Type': 'application/json',
+      ...corsHeaders,
+    },
+  });
 }
