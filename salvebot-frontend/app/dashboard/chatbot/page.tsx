@@ -38,7 +38,7 @@ interface Chatbot {
 export default function ChatbotManagePage() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const chatbotId = searchParams.get('id')
+  const chatbotId = searchParams?.get('id')
   
   const [chatbot, setChatbot] = useState<Chatbot | null>(null)
   const [documents, setDocuments] = useState<Document[]>([])
@@ -309,7 +309,7 @@ export default function ChatbotManagePage() {
           {activeTab === 'documents' && (
             <div className="space-y-8">
               <DocumentUpload
-                chatbotId={chatbotId}
+                chatbotId={chatbotId || ''}
                 onUploadSuccess={handleDocumentUpload}
                 onUploadError={(error) => setError(error)}
               />
@@ -543,7 +543,7 @@ export default function ChatbotManagePage() {
                   <code>
                     {`<script>
   window.salvebotConfig = {
-    chatbotId: "${chatbotId}",
+    chatbotId: "${chatbotId || ''}",
     theme: "${chatbot.theme}",
     position: "${chatbot.position}"
   };

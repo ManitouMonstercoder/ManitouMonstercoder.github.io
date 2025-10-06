@@ -38,7 +38,7 @@ interface Chatbot {
 export default function ChatbotManagePage() {
   const router = useRouter()
   const params = useParams()
-  const chatbotId = params.id as string
+  const chatbotId = params?.id as string
   
   const [chatbot, setChatbot] = useState<Chatbot | null>(null)
   const [documents, setDocuments] = useState<Document[]>([])

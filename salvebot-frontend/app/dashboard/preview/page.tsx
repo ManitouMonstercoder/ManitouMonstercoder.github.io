@@ -37,7 +37,7 @@ function ChatInterface({ chatbot }: { chatbot: Chatbot }) {
 
 export default function PreviewPage() {
   const searchParams = useSearchParams()
-  const chatbotId = searchParams.get('id')
+  const chatbotId = searchParams?.get('id')
   
   const [chatbot, setChatbot] = useState<Chatbot | null>(null)
   const [isLoading, setIsLoading] = useState(true)
