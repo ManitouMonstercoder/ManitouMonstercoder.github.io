@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
+import { CookieConsent } from '@/components/gdpr/CookieConsent'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -38,6 +39,7 @@ export default function RootLayout({
         <div className="flex min-h-screen flex-col">
           {children}
         </div>
+        <CookieConsent />
       </body>
     </html>
   )

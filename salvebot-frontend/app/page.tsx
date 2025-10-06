@@ -267,18 +267,18 @@ export default function HomePage() {
                 </div>
                 <span className="text-xl font-semibold">Salvebot</span>
               </Link>
-              <p className="text-muted-foreground leading-relaxed mb-6 max-w-md">
-                Open-source AI chatbot platform for businesses. Create intelligent customer support bots in minutes with advanced RAG technology.
-              </p>
+            <p className="text-muted-foreground leading-relaxed mb-6 max-w-md">
+              Enterprise AI chatbot platform for businesses. Create intelligent customer support bots in minutes with advanced RAG technology and enterprise-grade security.
+            </p>
               <div className="flex space-x-2">
                 <Link href="/signup">
                   <Button size="sm">
-                    Get Started Free
+                    Start Free Trial
                   </Button>
                 </Link>
-                <Link href="https://github.com/salvebot/salvebot">
+                <Link href="/demo">
                   <Button variant="outline" size="sm" className="flex items-center space-x-2">
-                    <span>GitHub</span>
+                    <span>View Demo</span>
                   </Button>
                 </Link>
               </div>
@@ -308,7 +308,7 @@ export default function HomePage() {
           
           <div className="border-t border-border/50 pt-8 flex flex-col md:flex-row justify-between items-center">
             <div className="text-sm text-muted-foreground mb-4 md:mb-0">
-              <p>&copy; 2024 Salvebot. Open source and free to use.</p>
+              <p>&copy; 2024 Salvebot Inc. All rights reserved.</p>
             </div>
             <div className="flex space-x-6 text-sm">
               <Link href="/privacy" className="text-muted-foreground hover:text-foreground transition-colors">

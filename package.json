@@ -1,7 +1,7 @@
 {
   "name": "salvebot",
   "version": "1.0.0",
-  "description": "Open-source SaaS chatbot platform with RAG technology",
+  "description": "Enterprise AI chatbot platform with advanced RAG technology",
   "private": true,
   "workspaces": [
     "salvebot-frontend",
@@ -30,18 +30,19 @@
     "nextjs",
     "cloudflare-workers",
     "stripe",
-    "open-source"
+    "enterprise",
+    "ai-platform"
   ],
-  "author": "Salvebot Contributors",
-  "license": "MIT",
+  "author": "Salvebot Inc.",
+  "license": "PROPRIETARY",
   "repository": {
     "type": "git",
-    "url": "https://github.com/yourusername/salvebot.git"
+    "url": "https://github.com/salvebot/salvebot.git"
   },
   "bugs": {
-    "url": "https://github.com/yourusername/salvebot/issues"
+    "url": "https://github.com/salvebot/salvebot/issues"
   },
-  "homepage": "https://yourusername.github.io/salvebot",
+  "homepage": "https://salvebot.com",
   "devDependencies": {
     "concurrently": "^8.2.2"
   }
