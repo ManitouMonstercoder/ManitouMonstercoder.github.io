@@ -100,7 +100,7 @@ export async function POST(req: Request) {
         finalChatbotId,
         lastMessage.content,
         finalDomain,
-        sessionId
+        sessionId || undefined
       );
 
       console.log('RAG Response received:', ragResponse);
